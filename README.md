@@ -10,4 +10,4 @@
 ## [LIST]
 + Creational Patttern
   
-  + [SingleTon]()
+  + <a href="Creational Pattern/Singleton.md">SingleTon</a>
