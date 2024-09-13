@@ -227,8 +227,9 @@ public class Logger {
 <br>
 
 ### 2. Lazy initialization (늦은 초기화 방식)
-
+<br>
   반면 Lazy initialization 방식을 적용시킨 싱글턴 패턴으로 구현된 프로그램의 경우엔, 실제 객체가 사용되는 시점까지 객체 생성을 미루다가 객체가 사용되려는 시점에 getter 메서드를 통해 객체가 null 값이면 객체를 새로 생성하고 객체가 이미 존재한다면 바로 이때 단일 객체를 생성하고 반환하도록 구현한 방식이다.
+<br><br>
 
 ```java
 
@@ -254,8 +255,12 @@ public class Logger {
     }
 }
 ```
+  <br>
   
  이러한 이유로 Lazy initialization 방식은 싱글톤 객체가 필요할 때만 객체를 생성하기때문에 메모리 사용을 최적화할 수 있다는 장점이있다. 
- 
-
+<br><br>
 하지만, Lazy initialization 방식에는 중요한 단점이 하나있다. 바로 밑에서 설명할 다중 스레드 환경에서 싱글턴의 단일 객체 원칙을 깨뜨릴 수 있다는 점이다.
+<br>
+
+
+
