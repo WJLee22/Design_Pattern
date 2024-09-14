@@ -146,7 +146,9 @@
         this.balance = balance;
 //        this.myLogger = new Logger();
     }
-
+    public void setLogger(Logger myLogger) {
+        this.myLogger = myLogger;
+    }
 ```
 
 위 코드처럼, 메인 메서드에서 하나의 로거 객체를 생성한다음 이 객체를 각 어카운트 객체의 setter 메서드를 통해
@@ -205,7 +207,8 @@
 public class Logger {
     private final String LOGFILE = "log.txt";
     private PrintWriter writer;
-    private static Logger instance = new Logger(); //static 정적 참조 변수를 선언함과 동시에 new 를 통해 단일 인스턴스를 초기화
+//static 정적 참조 변수를 선언함과 동시에 new 를 통해 단일 인스턴스를 초기화
+    private static Logger instance = new Logger(); 
 //생성자의 접근 지정자를 `private`으로 설정
 private Logger() {
         try {
@@ -213,7 +216,7 @@ private Logger() {
             writer = new PrintWriter(fw, true);
         } catch (IOException e) {}
     }
-    public static Logger getInstance() { return instance; }
+    public static Logger getInstance() { return instance; } //정적 필드 instance를 반환해주는 정적 메서드 getInstance
     public void log (String message) {
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
@@ -231,7 +234,7 @@ public class Account {
     public Account(String owner, int balance) {
         this.owner = owner;
         this.balance = balance;
-        this.myLogger = Logger.getInstance();
+        this.myLogger = Logger.getInstance(); //Logger 클래스의 정적 메서드 호출
     }
 
     public String getOwner() {
