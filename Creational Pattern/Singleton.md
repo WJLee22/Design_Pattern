@@ -206,7 +206,8 @@ public class Logger {
     private final String LOGFILE = "log.txt";
     private PrintWriter writer;
     private static Logger instance = new Logger(); //static 정적 참조 변수를 선언함과 동시에 new 를 통해 단일 인스턴스를 초기화
-    private Logger() {
+//생성자의 접근 지정자를 `private`으로 설정
+private Logger() {
         try {
             FileWriter fw = new FileWriter(LOGFILE);
             writer = new PrintWriter(fw, true);
@@ -220,7 +221,57 @@ public class Logger {
     }
 }
 ```
-  
+  ```java
+
+public class Account {
+    private String owner;
+    private int balance;
+    private Logger myLogger;
+
+    public Account(String owner, int balance) {
+        this.owner = owner;
+        this.balance = balance;
+        this.myLogger = Logger.getInstance();
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void deposit(int money) {
+        myLogger.log("owner" + " : " + this.getOwner() + " deposit " + money);
+        balance += money;
+    }
+
+    public void withdraw(int money) {
+        if (balance >= money) {
+            myLogger.log("owner" + " : " + this.getOwner() + " withdraw " + money);
+            balance -= money;
+        }
+    }
+}
+
+```
+
+ ```java
+
+public class Main {
+    public static void main(String[] args) {
+
+        Account acct1 = new Account("insang1", 1000000);
+        acct1.deposit(20000);
+        Account acct2 = new Account("insang2", 2000000);
+        acct2.withdraw(5000);
+    }
+}
+
+
+
+```
  이 방식은 클래스가 로드됨과 동시에 겍체가 생성되기떄문에 객체가 미리 준비되어있어 접근이 빠르다는 장점이있지만, 만약 해당 단일 객체를 사용하지않는 경우에도 객체는 프로그램 시작과 동시에 자동으로 생성되기에 메모리 자원의 낭비를 초래할 수 있다는 단점이 있다.
 
 
