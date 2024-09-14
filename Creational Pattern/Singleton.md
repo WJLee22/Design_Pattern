@@ -172,11 +172,11 @@
   
 ### 단일 객체 생성을 위한 싱글턴 패턴의 3가지 규칙
 
-- Logger 클래스 내에 단일 logger 객체의 레퍼런스를 저장하기 위한 `static` 정적 참조 변수를 필드로 둔다.
+**- Logger 클래스 내에 단일 logger 객체의 레퍼런스를 저장하기 위한 `static` 정적 참조 변수를 필드로 둔다.**
   
-- Logger 인스턴스를 `new` 연산자로 생성하려고 할 때 객체 생성을 제어하기 위해, 외부 클래스에서 Logger 클래스의 생성자 메서드에 접근하지 못하도록 생성자의 접근 지정자를 `private`으로 설정한다.
+**- Logger 인스턴스를 `new` 연산자로 생성하려고 할 때 객체 생성을 제어하기 위해, 외부 클래스에서 Logger 클래스의 생성자 메서드에 접근하지 못하도록 생성자의 접근 지정자를 `private`으로 설정한다.**
    
-- 단일 Logger 객체를 반환해주는 역할을 하는 `getter` 메서드를 정의한다.
+**- 단일 Logger 객체를 반환해주는 역할을 하는 `getter` 메서드를 정의한다.**
 
 
 
@@ -371,12 +371,6 @@ Logger 객체 생성을 담당하는 getInstance 정적 메서드에 synchronize
 
 ```java
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class Logger {
     private final String LOGFILE = "log.txt";
     private PrintWriter writer;
@@ -403,4 +397,120 @@ public class Logger {
 ```
 
 위와 같이 getInstance 정적 메서드에 synchronized를 적용함으로써 Eager Initialization 싱글턴에서의 스레드 경합문제를 해결하였다.
+
+하지만 이 방법마저도 문제가 하나있다. 임계영역에서의 lock 으로 인해 스레드들이 대기하면서 성능의 저하가 발생한다는 문제이다. 이 문제도 한번 해결해보자. 
+
+
+## synchronized로 인한 성능저하문제 해결방법 by DCL
+<br>
+getInstance 메서드에서, 만약 instance 가 null 이 아니라면, 즉 단일 객체가 생성된 상태라면 해당 객체를 반환해주기만하면 끝이다. 
+따라서 instance가 null이 아닌 경우까지 synchronized로 매번 스레드 동기화를 적용할 필요는 없다.
+굳이 이 getInstance 메서드 전체를 locking 시켜서 다른 스레드들을 대기시킬 필요가 없다는 것.
+getInstance 호출시마다 매번 발생하는 synchronized로 인한 lock 과정이 바로 성능적 비효율성을 초래하는 것이다.  
+<br>
+<br>
+
+```
+=> getInstance 메서드 자체를 synchronized 키워드로 임계영역으로 적용을 해뒀기에 어떠한 스레드가 getInstance 메서드를
+locking 하고 수행하는 동안에는 다른 스레드들은 이 메서드 자체에 진입하지 못하므로, instance 가 null 이 아닌 경우임에도
+불구하고 바로바로 instance 를 리턴받지못하고 현재 getInstance 에 locking하여 사용중인 스레드가 lock을 해제할때까지
+대기해야하는 성능적인 비효율이 발생한다.
+
+lock을 기다리는 동안 스레드는 CPU 자원을 소모하며 대기하게되는데, 이는 시스템 자원의 비효율적인 사용을 초래하기 때문이다.
+ ```
+<br>
+이러한 문제를 해결하기 위해, getInstance 메서드 전체에 synchronized를 적용하는 대신, instance가 null인 경우의
+if 문 내부 블록에 또 한 번 instance가 null인지 확인하는 if 문을 감싸는 코드블럭에 synchronized를 적용하는 
+DCL(Double Check Locking) 기법을 사용할 수 있습니다. getInstance 메서드를 아래와 같이 바꿔주자. 
+<br><br>
+
+```java
+     public static Logger getInstance() {
+        if(instance==null)
+            synchronized (Logger.class){ //getInstance 메서드 자체가 아닌, if 문을 감싸는 코드블럭에 synchronized를 적용. 
+                if(instance==null)
+                    instance=new Logger();
+            }
+
+        return instance;
+    }
+```
+>synchronized (Logger.class) { ... } 블록은 일반 메서드가 아닌 임계영역을 지정하기위한 코드 블록이라고 생각하면 된다.
+<br>
+
+이 DLC 적용를 통해, instance가 null인 최초의 경우에만 synchronized를 적용하여 lock을 획득하고, 그 이후에는 스레드의 대기과정 없이 바로바로 인스턴스를 반환할 수 있다. 
+기존의 getInstance 메서드 자체에 synchronized 를 적용시키던 방식의 성능상의 단점을 보완해낼 수 있게된 것이다. 
+
+<br>
+
+자. DCL도 제대로 잘 동작하고 시스템 효율상의 문제까지도 잘 해결했다. 그러나 진짜 마지막으로, 미묘한 문제가 하나 남아있다.
+
+일반적으로 new 연산자로 객체를 생성하면, 
+1단계: 해당 객체를 위한 메모리를 힙 영역에 할당하는 명령어
+2단계: 객체의 생성자를 실행하여 초기화 작업을수행하는 명령어 
+3단계: 할당된 객체의 레퍼런스를 반환해주는 명령어
+
+순서대로 순차적으로 명령어가 실행되는데, 이 순서는 컴파일러가 성능 최적화를 위해서 최적의순서대로 명령어를 reorder 하게된다(1-2-3, 1-3-2, 2-3-1 .... 등등). 이 컴파일러의 명령어 reorder로 인해 미묘한 문제가 발생하게된다.   
+
+만약 1-3-2 순서대로 컴파일러가 실행순서를 정했다고 가정해보자. 스레드1이 먼저 실행되면서 getInstance를 호출하여 <1>Logger 인스턴스를 생성하고 <3>생성된 객체를 반환받는다. 그리고 아직 <2>단계 명령어인 객체초기화 과정을 거치지않은 상태에서, 그 사이에 새로운 스레드2가 실행되면서 getInstance를 호출하여 아까 생성한 초기화되지않은 객체를 반환받아서 사용하게되는 문제가 발생한다. 초기화되지않은 객체를 사용하는 것은 예기치 않은 동작이나 오류를 발생시키기에 NullPointerException 예외가 발생하여 프로그램에 결함이 발생하게된다.
+
+<br>
+
+>성능 최적화를 위해 컴파일러가 수행하는 명령어 reorder는 volatile 키워드를 통해서 금지시킬 수 있으니, 이 volatile 키워드를 이용하여 DLC의 문제점 해결이 가능하다.
+>
+<br>
+DCL 적용시 이 점을 꼭 알고 적용하도록하자. 
+
+<br><br>
+
+## Demand(Lazy) Holder 방식
+
+<br>
+
+이제 싱글턴 패턴을 구현하는 마지막 방식인 Demand(Lazy) Holder 방식을 알아보자.   
+<br>
+
+>**Demand Holder 방식은 가장 많이 사용되는 싱글턴 구현 방식이다.**
+>
+<br>
+Demand(Lazy) Holder 방식은 volatile 이나 synchronized 키워드 없이도 스레드의 동시성(경합) 문제를 해결할 수 있는 방식이다.  
+
+```java
+public class Logger {
+        private final String LOGFILE = "log.txt";
+        private PrintWriter writer;
+        private static Logger instance;
+        public Logger() {
+            try {
+                FileWriter fw = new FileWriter(LOGFILE);
+                writer = new PrintWriter(fw, true);
+            } catch (IOException e) {}
+        }
+        public void log (String message) {
+            System.out.println(this.toString());
+            SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+            Date date = new Date(System.currentTimeMillis());
+            writer.println(formatter.format(date) + " : " + message);
+        }
+
+        private static class LazyHolder {
+            public static final Logger INSTANCE = new Logger();
+        }
+        public static Logger getInstance() {
+            return LazyHolder.INSTANCE;
+        }
+}
+```
+
+
+
+
+
+상당히 간단하면서도 다중 스레드 환경에서 사용할 수 있다는 점이 Demand Holder 방식이 많이 쓰이는 이유이다. 
+
+eager Initialization의 경우엔 클래스 로딩할때 instance 객체를 미리만들어두고 그 하나를 공유해서 사용한다는 점이고, 이 방식과 거의 유사하지만 Demand Holder 방식과의 한가지 큰 차이점은, Demand Holder 방식은 단일 객체를 미리 만들어둔게 아니라 외부객체에서 getInstance 메서드를 호출할때 그때서야 객체를 생성한다는 점이다.  
+
+
+
+
 
