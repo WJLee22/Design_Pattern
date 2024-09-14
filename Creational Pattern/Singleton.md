@@ -98,9 +98,9 @@
   ```java
   public class Main {
     public static void main(String[] args) {
-        Account acct1 = new Account("insang1", 1000000);
+        Account acct1 = new Account("WJLee1", 1000000);
         acct1.deposit(20000);
-        Account acct2 = new Account("insang2", 2000000);
+        Account acct2 = new Account("WJLee2", 2000000);
         acct2.withdraw(5000);
         acct2.withdraw(2000);
     }
@@ -128,10 +128,10 @@
  public class Main {
     public static void main(String[] args) {
         Logger logger = new Logger(); //하나의 Logger 인스턴스 생성
-        Account acct1 = new Account("insang1", 1000000);
+        Account acct1 = new Account("WJLee1", 1000000);
         acct1.setLogger(logger);
         acct1.deposit(20000);
-        Account acct2 = new Account("insang2", 2000000);
+        Account acct2 = new Account("WJLee2", 2000000);
         acct2.setLogger(logger);
         acct2.withdraw(5000);
         acct2.withdraw(2000);
@@ -265,9 +265,9 @@ public class Account {
 public class Main {
     public static void main(String[] args) {
 
-        Account acct1 = new Account("insang1", 1000000);
+        Account acct1 = new Account("WJLee1", 1000000);
         acct1.deposit(20000);
-        Account acct2 = new Account("insang2", 2000000);
+        Account acct2 = new Account("WJLee2", 2000000);
         acct2.withdraw(5000);
     }
 }
@@ -313,8 +313,94 @@ public class Logger {
   
  이러한 이유로 Lazy initialization 방식은 싱글톤 객체가 필요할 때만 객체를 생성하기때문에 메모리 사용을 최적화할 수 있다는 장점이있다. 
 <br><br>
-하지만, Lazy initialization 방식에는 중요한 단점이 하나있다. 바로 밑에서 설명할 다중 스레드 환경에서 싱글턴의 단일 객체 원칙을 깨뜨릴 수 있다는 점이다.
+하지만, Lazy initialization 방식에는 중요한 단점이 하나있다. 바로 밑에서 설명할 다중 스레드(Multi-Thread) 환경에서 싱글턴의 단일 객체 원칙을 깨뜨릴 수 있다는 점이다.
+
 <br>
 
+## Multi-Thread 환경에서의 (Lazy initialization) Singleton Pattern
 
+<br>
+
+먼저 각 계좌를 소유하는 사용자 User 스레드 클래스를 정의하고 다수의 User 스레드 객체들을 생성하여 다중 스레드 환경을 조성해보자.
+
+<br>
+
+```java
+public class User extends Thread{
+
+    public User(String name){super(name);}
+
+    @Override
+    public void run() {
+        Random r= new Random();
+        Account acct= new Account(Thread.currentThread().getName(), r.nextInt(1000000));
+        if(r.nextBoolean())
+            acct.withdraw(r.nextInt(acct.getBalance()));
+        else
+            acct.deposit(r.nextInt(acct.getBalance()));
+    }
+}
+```
+
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        User[] users = new User[10];
+        for(int i=0; i<10; i++){
+            users[i]= new User("insang"+i);
+            users[i].start();
+        }
+    }
+}
+```
+
+
+다중 스레드 환경이 조성된 이후 스레드들을 동시에 실행시키게되면서, 각 User 객체가 getInstance 정적 메서드를 동시에 실행하게되는 스레드 경합이 발생하면 -> 해당 스레드들은 동일한 타이밍에 instance 객체가 null인 상태임을 확인하게되고, 이로인해 단일 객체가 아닌 여러개의 객체가 생성될 수 있다는 문제가 발생하게되는 것이다.     
+
+이러한 스레드 경합으로인한 문제를 해결하기 위해선 자바에서 제공하는 synchronized 키워드를 사용하면 해결된다. 
+
+> ※ 반면 Eager Initialization의 경우엔 Logger 클래스 로딩 시점에서 이미 단일 인스턴스를 생성했기때문에 다중 스레드 환경에서 각 스레드가 동시에 메서드에 접근하여 Logger 객체를 추가로 새로 생성하게되는 -  싱글턴의 단일 객체 원칙을 깨뜨리는 일은 발생하지 않는다.
+
+
+## 스레드 경합문제 해결방법 by synchronized
+
+synchronized 키워드는 자바에서 제공하는 스레드 동기화를 위한 장치로, synchronized 키워드가 적용된 코드블록은 동기화가 설정된 임계영역으로 지정되어, 어떠한 스레드가 해당 코드블록에 진입할 경우 코드블록에 lock이 걸리고 해당 스레드가 코드블록을 모두 수행하고나면 자동으로 unlock 되어지면서 대기하고있던 다른 스레드 중 하나가 lock을 소유하여 실행하게하는 동기화 기법이다. 임계영역에 lock 이 걸리면 다른 스레드는 대기해야한다. 
+
+Logger 객체 생성을 담당하는 getInstance 정적 메서드에 synchronized를 적용하여 스레드들을 동기화해보자.  
+
+```java
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Logger {
+    private final String LOGFILE = "log.txt";
+    private PrintWriter writer;
+    private static Logger instance;
+    private Logger() {
+        try {
+            FileWriter fw = new FileWriter(LOGFILE);
+            writer = new PrintWriter(fw, true);
+        } catch (IOException e) {}
+    }
+     public static synchronized Logger getInstance() { //synchronized 키워드로 getInstance메서드를 임계영역으로 설정
+        if(instance==null)
+            instance=new Logger();
+
+        return instance; }
+    public void log (String message) {
+
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        writer.println(formatter.format(date) + " : " + message);
+    }
+}
+
+```
+
+위와 같이 getInstance 정적 메서드에 synchronized를 적용함으로써 Eager Initialization 싱글턴에서의 스레드 경합문제를 해결하였다.
 
