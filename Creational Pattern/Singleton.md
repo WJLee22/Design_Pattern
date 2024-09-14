@@ -493,22 +493,28 @@ public class Logger {
             writer.println(formatter.format(date) + " : " + message);
         }
 
-        private static class LazyHolder {
+        private static class LazyHolder { //정적 내부 클래스  
             public static final Logger INSTANCE = new Logger();
         }
         public static Logger getInstance() {
-            return LazyHolder.INSTANCE;
+            return LazyHolder.INSTANCE; 
         }
 }
 ```
 
+Logger 클래스 내부에 LazyHolder 내부클래스를 만들어두고, LazyHolder 클래스에 정적 상수 변수인 INSTANCE 를 선언함과동시에 Logger 객체를 생성하여 변수를 초기화시킨다.
+이제 외부에서 Logger 클래스의 getInstance 메서드를 호출하면 LazyHolder 클래스의 INSTANCE 값을 반환받는다.  
+프로그램 시작시 Logger 클래스가 로딩이되어도, 외부에서 LazyHolder 클래스의 INSTANCE에 직접 접근할때까지는 내부클래스인 LazyHolder의 INSTANCE 값은 Logger 객체로 초기화되지 않는다.   
+
+<br>
+Demand Holder 방식과 eager Initialization 방식은 유사해보이지만, eager Initialization의 경우엔 클래스 로딩할때 instance 객체를 미리만들어두고 그 하나를 공유해서 사용하는 방식이고, Demand Holder 방식은 단일 객체를 미리 만들어둔게 아니라 외부객체에서 getInstance 메서드를 호출할때 그때서야 객체를 생성한다는 점이 차이점이다.  
 
 
-
+<br><br>    
 
 상당히 간단하면서도 다중 스레드 환경에서 사용할 수 있다는 점이 Demand Holder 방식이 많이 쓰이는 이유이다. 
 
-eager Initialization의 경우엔 클래스 로딩할때 instance 객체를 미리만들어두고 그 하나를 공유해서 사용한다는 점이고, 이 방식과 거의 유사하지만 Demand Holder 방식과의 한가지 큰 차이점은, Demand Holder 방식은 단일 객체를 미리 만들어둔게 아니라 외부객체에서 getInstance 메서드를 호출할때 그때서야 객체를 생성한다는 점이다.  
+
 
 
 
