@@ -511,7 +511,7 @@ public class Logger {
 <br><br>
 
 Logger 클래스 내부에 LazyHolder 내부클래스를 만들어두고, LazyHolder 클래스에 정적 상수 변수인 INSTANCE 를 선언함과동시에 Logger 객체를 생성하여 변수를 초기화시킨다.
-이제 외부에서 Logger 클래스의 getInstance 메서드를 호출하면 LazyHolder 클래스의 INSTANCE 값을 반환받는다.  
+이제 외부에서 Logger 클래스의 getInstance 메서드를 호출하면 LazyHolder 클래스가 JVM에 로드되어지고, INSTANCE가 지연초기화되어지면서 INSTANCE값을 반환받는다.  
 프로그램 시작시 Logger 클래스가 로딩이되어도, 외부에서 LazyHolder 클래스의 INSTANCE에 직접 접근할때까지는 내부클래스인 LazyHolder의 INSTANCE 값은 Logger 객체로 초기화되지 않는다.   
 
 <br>
