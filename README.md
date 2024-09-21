@@ -15,4 +15,4 @@
 
 + ### etc
   
-  + <a href="etc/OCP.md">SingleTon</a>
+  + <a href="etc/OCP.md">OCP</a>
