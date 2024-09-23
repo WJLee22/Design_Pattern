@@ -215,3 +215,146 @@ Printer 인터페이스에는 **"출력한다"** 는 기능인 print가 있고, 
 기존 Studnet 클래스의 print 메서드를 변경시켜서 형식 추가하는 것이 아닌, 새로운 파생 클래스를 추가하는 방식인 것이다.  
 
 이로써 **OCP 원칙을 만족하여 => 기존의 Student 클래스의 코드 변경없이, 다른 형태로 성적 정보를 출력하는 기능을 추가할 수 있게된다.** 
+
+<br>
+
+## 예제2 - 학점 출력
+
+다음과 같이 Student 클래스에는 중간고사 점수, 기말고사 점수, 과제 점수를 넘겨받고 학점을 계산해주는 메서드 로직이 존재한다.   
+
+
+```java
+
+public class Student{
+
+    private int midScore;
+    private int finalScore;
+    private int hwScore;
+
+    public Student(int midScore, int finalScore, int hwScore) {
+        this.midScore = midScore;
+        this.finalScore = finalScore;
+        this.hwScore = hwScore;
+    }
+
+    public Grade calculateGrade(){
+        double total= 0.35*midScore+0.35*finalScore+0.3*hwScore;
+
+        if (total >= 85) return Grade.A;
+        if (total >= 75) return Grade.B;
+        if (total >= 65) return Grade.C;
+        if (total >= 50) return Grade.D;
+        return Grade.F;
+    }
+}
+
+```
+
+그러나 이 코드 역시, 추후 교수님의 재량 및 학교 정책의 변경으로 인해 학점 계산방식이 변경될 경우 Student 클래스 내부의 calculateGrade 학점 계산 로직을 직접 수정해야하기에 OCP 를 위반하게된다. 
+
+위에서 알아본 OCP 만족을 위한 4단계를 이 경우에 적용시켜 OCP를 만족하도록 코드를 수정해보자.
+
+
+<br>
+
+> **1. 변하는 것 => 학점 계산 로직**  
+
+> **2. 변하는 부분인 학점 계산 로직을 클래스로 추출하여 모델링(GradeCalc1, GradeCalc2...)**  
+
+>**3. 변화들을 포괄하는 개념을 일반화, 실체화하여 추상클래스로 모델링 (GradeCalculator 추상클래스)**  
+
+>**4. 2단계에서 모델링한 클래스들을 실체화한 추상클래스의 하위 클래스로 설정**
+
+<br>
+
+먼저, 변하는 부분은 학점 계산 로직이다. 각 로직들을 별도의 클래스로 모델링하고, 이 클래스들을 포괄하는 GradeCalculator 라는 추상클래스도 모델링하여 각 클래스들이 이 추상클래스를 상속받아 서로 다른 로직들을 구현하도록하면된다. 
+
+<br>
+
+## OCP 만족하도록 개선한 코드
+
+```java
+
+public class Student{
+
+    private int midScore;
+    private int finalScore;
+    private int hwScore;
+    private GradeCalculator gradeCalculator; //연관관계를 통한 학점계산 위임.
+
+    public void setGradeCalculator(GradeCalculator gradeCalculator) {
+        this.gradeCalculator = gradeCalculator;
+    }
+
+    public Student(int midScore, int finalScore, int hwScore) {
+        this.midScore = midScore;
+        this.finalScore = finalScore;
+        this.hwScore = hwScore;
+    }
+
+    public Grade calculateGrade(){
+        return gradeCalculator.calculateGrade(midScore,finalScore,hwScore);
+    }
+
+}
+
+
+
+/////////////////// 학점계산로직을 추상화한 추상클래스
+
+public abstract class GradeCalculator {
+
+    public abstract Grade calculateGrade(int midScore, int finalScore, int hwScore);
+}
+
+
+
+///////////////////추상클래스를 상속받은 학점계산로직 클래스1
+
+public class GradeCalc1 extends GradeCalculator{
+    //변화하는 것 = 학점 계산 로직. 이걸 클래스로 만들어냄.
+
+        public Grade calculateGrade(int midScore, int finalScore, int hwScore){
+            double total= 0.35*midScore+0.35*finalScore+0.3*hwScore;
+
+            if (total >= 85) return Grade.A;
+            if (total >= 75) return Grade.B;
+            if (total >= 65) return Grade.C;
+            if (total >= 50) return Grade.D;
+            return Grade.F;
+        }
+    }
+
+
+
+/////////////////// 추상클래스를 상속받은 학점계산로직 클래스2
+
+public class GradeCalc2 extends GradeCalculator{
+    public Grade calculateGrade(int midScore, int finalScore, int hwScore){
+        //다른 학점 계산 로직. => 중간 기말 학점 비율 조정
+        double total= 0.30*midScore+0.40*finalScore+0.3*hwScore;
+
+        if (total >= 85) return Grade.A;
+        if (total >= 75) return Grade.B;
+        if (total >= 65) return Grade.C;
+        if (total >= 50) return Grade.D;
+        return Grade.F;
+    }
+}
+
+
+
+///////////////////
+
+public class Main {
+    public static void main(String[] args) {
+
+        Student s= new Student(80,90,70);
+        s.setGradeCalculator(new GradeCalc2()); //Student 클래스를 손댈필요없이 학점계산로직 클래스를 별도로 모델링->객체화하여 사용. OCP 만족. 
+        System.out.println(s.calculateGrade());
+    }
+}
+
+```
+
+
