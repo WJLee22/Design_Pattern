@@ -14,7 +14,7 @@
 
 + ### Behavioral Patttern
   
-  + <a href="Strategy Pattern/Strategy.md">Strategy</a>
+  + <a href="Behavioral pattern/Strategy.md">Strategy</a>
 
 + ### etc
   
