@@ -12,6 +12,9 @@
   
   + <a href="Creational Pattern/Singleton.md">SingleTon</a>
 
++ ### Behavioral Patttern
+  
+  + <a href="Strategy Pattern/Strategy.md">Strategy</a>
 
 + ### etc
   
