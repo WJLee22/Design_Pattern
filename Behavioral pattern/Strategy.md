@@ -132,7 +132,7 @@ public class Sungard extends Robot{
 
 ### <p align="center">`<문제점들을 보완한 최종 설계>`</p>  
 <div align="center">
-<img src= "https://github.com/user-attachments/assets/7bfc9bbe-3422-483a-9e5e-0f85702e9a4c">
+<img src= "https://github.com/user-attachments/assets/07a976f0-6d08-4ca6-a022-b343f8a71cd9">
 </div>
 
 <br>
