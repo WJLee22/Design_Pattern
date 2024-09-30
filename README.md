@@ -20,6 +20,10 @@
   
   + <a href="etc/OCP.md">OCP</a>
 
+
+<br>
+<hr>
+
 + ### Practice
   
-  + <a href="Practice">Practice</a>
+  + <a href="Practice/Strategy Pattern">Strategy Pattern 실습</a>
