@@ -31,12 +31,13 @@ public class Paengsu {
 }
 ```
 
-위의 코드는 펭수가 걷고 점프할 수 있다는 가정하에는 문제없는 코드이다.
+<br>
+위의 코드는 펭수가 걷고 점프할 수 있다는 가정하에는 문제없는 코드이다.  
 
-하지만, 만약 펭수가 이 외에도 날 수도 있고 기어갈 수도 있다면 어떨까?
+하지만, 만약 펭수가 이 외에도 날 수도 있고 기어갈 수도 있다면 어떨까?  
 
-=> modeSelected 메서드 내부의 switch 문에 case 를 추가해줘야하고, 클래스에 fly() 와 같은 메서드도 추가해주는 등, 알고리즘의 추가 및 변경시마다 
-기존 코드를 뜯어고쳐야하는 OCP 위반 문제가 발생한다.
+modeSelected 메서드 내부의 switch 문에 case 를 추가해줘야하고, Paengsu클래스에 fly() 와 같은 메서드도 추가해주는 등  
+**알고리즘의 추가 및 변경시마다 기존 코드를 뜯어고쳐야하는 OCP 위반 문제가 발생한다.**
 
 이럴때 Strategy Pattern을 적용하여 코드를 유연하게 할 수 있다.
 
@@ -90,7 +91,7 @@ public class Flying implements Moving{
 public class Main {
     public static void main(String[] args) {
         Paengsu p3=new Paengsu();
-        p3.setMoving(new Flying()); //날라 다니는 기능을 추가하고싶어 => 기존코드 변경없이, 포괄개념을 구현하는 Flying구체전략클래스 생성.
+        p3.setMoving(new Flying()); //날라 다니는 이동방법을 추가하고싶다면 => 기존코드 변경없이, 포괄개념을 구현하는 Flying구체전략클래스 생성.
         p3.move();
 }
 }
