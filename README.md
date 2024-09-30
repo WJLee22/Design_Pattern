@@ -26,4 +26,4 @@
 
 + ### Practice
   
-  + <a href="Practice/Strategy Pattern">Strategy Pattern 실습</a>
+  + <a href="Practice/Strategy Pattern.md">Strategy Pattern 실습</a>
