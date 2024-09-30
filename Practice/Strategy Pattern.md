@@ -45,9 +45,9 @@ public class Paengsu {
 ## <Strategy Pattern 적용 순서>
 
 #### 1. 변경되는 것이 무엇인지를 식별한다.
-#### 2. 그 변경되는 것을 전략클래스로 모델링한다.
-#### 3. 모델링한 전략을 포괄하는 포괄개념으로 인터페이스를 모델링한다.
-#### 4. 각 전략클래스들은 포괄개념인 인터페이스를 구현하는 구체클래스로 연결한다.
+#### 2. 그 변경되는 것을 클래스로 모델링한다.
+#### 3. 모델링한 전략을 포괄하는 포괄개념(Strategy)으로 인터페이스 및 추상클래스로 모델링한다.
+#### 4. 각 전략클래스들은 포괄개념인 인터페이스를 구현하는 구체전략클래스(ConcreteStrategy)로 연결한다.
 
 <br>
 
@@ -73,37 +73,7 @@ public interface Moving {
 ```
 ```java
 public class Walking implements Moving{
-    @Override
-    public void move() {
-        System.out.println("Walking...");
-    }
-}
-```
-```java
-public class Jumping implements Moving{
-    @Override
-    public void move() {
-            System.out.println("Jumping");
-    }
-}
-```
-```java
-public class Main {
-    public static void main(String[] args) {
-        Paengsu p1=new Paengsu();
-        p1.setMoving(new Walking());
-        p1.move();
-
-        Paengsu p2=new Paengsu();
-        p2.setMoving(new Jumping());
-        p2.move();
-    }
-}
-```
-
-<br>
-
-만약 새로운 이동 알고리즘으로 Flying 을 추가하고싶다면, 아래와 같이 기존코드의 변경없이 Moving을 구현한 구체클래스로 모델링해주면된다.
+    략클래스로 모델링해주면된다.
 
 <br>
 
