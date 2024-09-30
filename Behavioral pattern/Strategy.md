@@ -343,7 +343,7 @@ public class Main {
 
 <br><br><hr><br>
 
-## 총정리
+## 마무리
 
 <br>
 
