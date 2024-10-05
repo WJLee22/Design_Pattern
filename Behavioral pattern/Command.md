@@ -150,5 +150,107 @@ public class Main {
 
 ## 설계 변경(문제점 해결)
 
+<br>
+
+프로그램이 실행되었을때, 버튼으로 램프를 켤 수도 있고 알람도 시작시킬 수 있도록 설계를 변경해보자. 
+
+> (버튼을 한번 눌렸을때 램프를켜고 또 한번 눌렸을때는 알람을 켜고...)
+
+<br>
+
+이를 위해선 Button 클래스가 어느하나만이 아닌,   
+
+Lamp와 Alarm 클래스 둘과 모두 연관관계를 맺어야할 것이다.  
+
+<br>
+
+설계는 아래와 같다.  
+
+<br><br>
+
+<div align="center">
+ <img src="https://github.com/user-attachments/assets/d0943ebd-8a3d-4c78-b7da-ab19dc293901">
+</div>
+
+<br>
+
+```java
+public class Lamp {
+    public void turnOn(){ System.out.println("Lamp on"); }
+}
+```
+```java
+public class Alarm {
+    public void start(){ System.out.println("Alarming ..."); }
+}
+```
+```java
+// 현재 버튼의 모드를 나타내는 Mode 열거형
+// 현재 모드가 ALRAM 모드라면 알람start, LAMP 모드라면 램프on
+enum Mode {LAMP, ALRAM}
+
+public class Button {
+    private Alarm theAlarm;
+    private Lamp theLamp;
+    // 버튼의 현재 모드를 나타내는 필드
+    private Mode theMode;
+
+    public void setTheMode(Mode theMode) {
+        this.theMode = theMode;
+    }
+
+    public Button(Lamp theLamp,Alarm theAlarm) {
+        this.theLamp = theLamp;
+        this.theAlarm = theAlarm;
+    }
+
+    /* 현재 이 버튼이 어떤 모드인지에 따라서,
+    램프를 켤 수도 있고 or 알람을 시작할 수도 있다. */
+    public void pressed(){
+        switch (theMode){
+            case LAMP -> theLamp.turnOn();
+            case ALRAM -> theAlarm.start();
+        }
+    }
+}
+
+```
+```java
+public class Main {
+    public static void main(String[] args) {
+        Lamp lamp = new Lamp();
+        Alarm alarm = new Alarm();
+
+        //버튼은 Lamp, Alarm 둘과 연관관계을 맺음
+        Button button = new Button(lamp, alarm);
+
+        //버튼의 모드를 LAMP로 설정하여 => 버튼의 기능을 램프켜기로 설정
+        button.setTheMode(Mode.LAMP);
+        button.pressed();
+
+        //버튼의 모드를 ALRAM으로 설정하여 => 버튼의 기능을 알람시작으로 설정
+        button.setTheMode(Mode.ALRAM);
+        button.pressed();
+    }
+}
+```
+
+<br>
+
+이로써, 모드값 변경을통해 프로그램 실행시에 버튼의 기능을 변경할 수 있게되었다.  
+
+**하지만, 이 역시도 문제가 발생하는 코드설계이다.**  
+
+왜냐하면, 버튼에 새로운 기능추가시 Button 클래스의 pressed() 메서드에 새로운 case를 더 추가해주는 등      
+기존의 코드를 계속 변경시켜줘야한다는 OCP 위반이 발생하기때문이다.
+> (Ex 버튼에 TV 켜기 기능 추가시 열거형 Mode에 새로운 TV 모드값을 추가해줘야하고, Tv 클래스와 연관관계를 맺기위해 Button 클래스에 private tv맴버변수 추가 및 생성자 코드를 변경해줘야하며 pressed() 메서드의 switch문에 TV case도 새로 추가해줘야할 것이다.)
+
+<br>
+
+기능 하나 추가만으로도 기존코드에 위와 같은 변경이 일어나게된다.
+
+**즉, 개선된 현재의 설계 역시 OCP를 만족하지못한다.**
+
+
 
 
