@@ -135,7 +135,7 @@ public class Sungard extends Robot{
 
 <br>
 
-#### 4. 2단계에서 모델링한 클래스들을, 포괄개념인 인터페이스를 구현하는 구체전략 클래스(Concrete Strategy)로 연결한다. 
+#### 4. 2단계에서 모델링한 클래스들을, 포괄개념인 인터페이스를 구현하는 하위 구체전략 클래스(Concrete Strategy)로 연결한다. 
 
 <br>
 <hr>
