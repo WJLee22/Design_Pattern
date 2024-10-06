@@ -5,6 +5,11 @@
 
 ## Command(커맨드) 패턴이란?
 
+
+
+
+
+
 <br>
 
 ## 만능 버튼 예제를 통해 알아보는 Command Pattern      
@@ -257,9 +262,264 @@ public class Main {
 
 **즉, 개선된 현재의 설계 역시 OCP를 만족하지못한다.**
 
+<br> 
+
+### <div align="center">이 OCP 위반문제를 Strategy 패턴을 응용하여 한번 해결해보자.</div>
+
+<br><br><br>
+
+## 2차 설계 개선(by Strategy 패턴 응용)
+
+<br>
+
++ **기능을 갖는 주체(`Context`) : `Button 클래스`**
+
+<br>
+
++ **실제 변하는 것(`Concrete Strategy`) : `AlarmStartCommmand, LampTurnOnCommand... 클래스`**  
+**(만능 버튼의 기능은, 실제로 경우에 따라서 알람시작 or 램프켜기 or...로 변경된다)**
+> 즉, 실제 변하는 것은 **버튼이 수행하는 기능**이다. 알람을 시작시키거나 램프를 키거나하는 이 버튼의 기능이자 실행동작(execute)을, `Command 구체 전략 클래스`로 모델링해준다
+
+<br>
+
++ **변경되는 동작 및 기능(구체전략)들을 포괄하는-추상화시킨 개념(`Strategy`) : `Command 인터페이스`**
+> 버튼이 수행하는 기능들을 일반화모델링한 개념
+
 <br><br>
 
-## 2차 설계 개선
+<div align="center">
+<img src="https://github.com/user-attachments/assets/73841c7c-1631-4cd6-9f1f-a29602c524bd">
+</div>
+
+<br>
+
+**Strategy 패턴과 설계구조 모양새가 비슷해보이나, 전략이 아닌, 무언가를 실행하는 명령기능들을 하위에 두었다는게 차이점이다.**
+
+<br>
+
+코드로 작성하면 아래와 같다. 
+
+<br>
+
+```java
+
+public class Button {
+    private Command theCommand; //버튼이 수행하는 커멘트를 레퍼런스하는 필드
+
+    //커멘드를 설정해주는 설정자
+    public void setTheCommand(Command theCommand) {
+        this.theCommand = theCommand;
+    }
+
+    public void pressed(){
+    theCommand.execute();
+    // 버튼 입장에서는, theCommand가 어떤 커멘드인지에 구애받지않고 theCommand.execute()로 기능을 실행가능함
+    // (버튼이 실행하는 기능이 숨겨져있는 캡슐화, 커멘드마다 실행되는 기능이 다르다는 다형성)
+    // 알람을 시작한다던지 램프를 켠다던지와 같은 버튼의 실행기능(command)을 외부에서 설정만해주면 어떤 기능이던지 해당 기능을 execute 가능.
+    }
+}
+```
+```java
+public interface Command {
+    public void execute();
+}
+```
+```java
+//알람을 시작하도록하는 버튼의 기능이자, 실행명령인 AlarmStart Command 클래스
+public class AlarmStartCommand implements Command{
+
+    private Alarm theAlarm;//AlarmStartCommand 클래스는 "알람을 시작해라"는 버튼의 실행명령이자 기능이므로
+                           //Alarm 과 연관관계를 맺어야한다.
+
+    public AlarmStartCommand(Alarm theAlarm) {
+        this.theAlarm = theAlarm;
+    }
+
+   @Override
+    public void execute() { //버튼이 수행하는 하나의 기능이자 명령.
+        theAlarm.start(); // 기능은 알람 시작하기.
+    }
+}
+```
+```java
+//램프를 켜도록하는 버튼의 기능이자, 실행명령인 LampTurnOn Command 클래스
+
+public class LampTurnOnCommand implements Command{
+
+    private Lamp theLamp;//LampTurnOnCommand 클래스는 "램프를 켜라"는 버튼의 실행명령이자 기능이므로
+                         //Lamp 와 연관관계를 맺어야한다.
+
+    public LampTurnOnCommand(Lamp theLamp) {
+        this.theLamp = theLamp;
+    }
+
+    @Override
+    public void execute() { //버튼이 수행하는 하나의 기능이자 명령.
+        theLamp.turnOn(); //그 기능은 램프 켜기.
+    }
+}
+```
+```java
+public class Main {
+    public static void main(String[] args) {
+        Alarm alarm = new Alarm();
+        Lamp lamp= new Lamp();
+        Button button = new Button();
+
+        //알람을 start 시키기위해서는, 알람을 start 시키는 Command가 필요하다
+        //alarm 인스턴스를 생성자에 넘겨주어, 해당 alarm 인스턴스에 대해서 start하도록 명령
+        ////alarmOnCommand와 alarm이 연관관계 맺도록.
+        Command alarmOnCommand = new AlarmStartCommand(alarm);
+
+        //이 button이라는 만능버튼의 기능이자 실행명령을 alarmOnCommand, 즉 알람시작 기능으로 설정
+        button.setTheCommand(alarmOnCommand);
+        button.pressed(); //현재 이 버튼의 기능은 알람시작 기능이므로, 버튼을 누르면 알람이 시작됨
+
+        Command lampOnCommand = new LampTurnOnCommand(lamp); //lampOnCommand와 lamp가 연관관계 맺도록.
+
+        button.setTheCommand(lampOnCommand); //이번엔 만능버튼의 기능을 램프켜기로 설정.
+        button.pressed(); //현재 이 버튼의 기능은 램프켜기 기능이므로, 버튼을 누르면 램프가 켜짐
+
+    }
+}
+```
+
+<br>
+
+> **이로써, OCP 원칙을 위반하지않으면서 버튼의 기능을 변경할 수 있게되었다.**
+
+> **또한 Stratrgy 패턴을 응용하였기에, 버튼에 새로운 기능을 추가할때도 기존코드의 변경없이 기능추가가 가능해졌다.**
+
+<br>
+
+**<div align="center">그렇다면, 만능 버튼에 TV를 켜는 기능을 한번 추가해보자.</div>**  
+
+<br>
+
+> **변화하는 것(TV켜기 기능)을 Command 인터페이스를 구현하는 하위 개념으로 모델링하고, TV 클래스와 연관관계를 맺도록 설계하면 된다.**
+
+<br><br>
+
+<div align="center">
+<img src="https://github.com/user-attachments/assets/3c9f61bc-4d54-4cbd-ba36-d4d560d77a9b">
+</div>
+
+<br>
+
+```java
+public class Tv {
+
+    public void on(){
+        System.out.println("Tv on");
+    }
+
+}
+```
+```java
+public class TvOnCommand implements Command{
+    private Tv tv;
+
+    public TvOnCommand(Tv tv) {
+        this.tv = tv;
+    }
+
+    @Override
+    public void execute() {
+        tv.on();
+    }
+}
+```
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Alarm alarm = new Alarm();
+        Lamp lamp= new Lamp();
+        Button button = new Button();
+
+        Command alarmOnCommand = new AlarmStartCommand(alarm);
+        button.setTheCommand(alarmOnCommand);
+        button.pressed(); 
+
+        Command lampOnCommand = new LampTurnOnCommand(lamp);
+        button.setTheCommand(lampOnCommand);
+        button.pressed(); 
+        
+        // 버튼에 tv켜기 기능추가 
+        Command tvOnCommand = new TvOnCommand(new Tv());
+        button.setTheCommand(tvOnCommand); //만능버튼의 기능을 tv켜기로 설정.
+        button.pressed(); //버튼을 누르면 tv가 켜짐
+    }
+}
+```
 
 
+<br>
+
+**<div align="center">위와 같이, 기존 코드의 변경없이(OCP 위반없이) 만능 버튼에 새로운 기능을 추가시켰다.</div>**  
+
+#### <div align="center">이것이 `Command 패턴`이다.</div>
+
+
+<br><br>
+
+## 커맨드 패턴의 일반적인 설계구조
+
+<br>
+
+<div align="center">
+<img src="https://github.com/user-attachments/assets/a9999342-33e4-4eeb-9312-c2c0d13d89c5">
+</div>
+
+> 출처: Java객체지향 디자인패턴(한빛미디어) 
+
+<br><br>
+
++ **`Invoker 클래스(호출자)`: 기능의 실행을 요청하는 `호출자 클래스`**  
+  > 예제에서는 Button 클래스 
+
+<br>
+
++ **`Command 인터페이스`: 실행될 기능에 대한 인터페이스로, 실행될 기능을 execute 메서드로 선언한다.**
+
+<br>
+  
++ **`ConcreteCommand 클래스`: 실제로 실행되는 기능을 나타내는 클래스.**  
+  Command 인터페이스의 execute() 메서드를 구현하여 이를통해 자신이 수행할 기능을 정의한다.
+  
+    > 예제에서는 AlarmStartCommand, LampTurnOnCommand... 클래스
+
+<br>
+    
++ **`Reciever 클래스(수신자)`: ConcreteCommand의 기능 실행을 위해 사용되는 `수신자 클래스`.**  
+                            실제 기능을 수행하는 주체.  
+                            ConcreteCommand의 execute()를 통해 Reciever가 action을 취함.(ex 램프 불을켜고, 알람시작하고...)  
+              
+  
+    > 예제에서는 Lamp, Alarm... 클래스 
+
+<br><br><br>
+
+### <div align="center">즉, 커맨드 패턴의 일반적인 구조는</div>  
+
+<br>
+
+> 현재 버튼의 기능이 램프켜기인 경우,
+> 
+> 누군가가 버튼을 눌러서 **버튼(Invoker)** 의 pressed가 실행이되면,
+>   
+> **AlarmStartCommand(ConcreteCommand)** 가 execute해서 **Alarm(Reciever)** 이 action하는 구조이다
+
+<br><br>
+
+**그래서 만약, 새로운 기능을 추가한다고하면 =>**          
+```
+Command 인터페이스의 하위개념으로 실행될 기능인 ConcreteCommand 클래스를 모델링해두고,
+
+ConcreteCommand에서 execute()로 어떤 명령을 내리면,
+
+연관관계이자 - 실제로 그 명령을 수행하는 주체인 Reciever 클래스에서 action을 수행하도록 설계하면 된다.
+```
+
+<br><br>
 
