@@ -45,12 +45,25 @@ modeSelected 메서드 내부의 switch 문에 case 를 추가해줘야하고, P
 
 ## <Strategy Pattern 적용 순서>
 
-#### 1. 변경되는 것이 무엇인지를 식별한다. (이동 알고리즘)
-#### 2. 그 변경되는 실제 알고리즘을 클래스로 모델링한다. (Walking, Jumping...)
-#### 3. 2단계에서 모델링한 구체적인 전략들을 포괄하는 포괄개념을 `인터페이스 및 추상클래스로` 모델링한다.(Moving `Strategy` = Moving interface)
-#### 4. 2단계에서 모델링한 클래스들을, 포괄개념인 인터페이스를 구현하는 구체전략 클래스(Concrete Strategy)로 연결한다. (Moving `Concrete Strategy` = Walking, Jumping...)
+<br>
+
+#### 1. 변경되는 것이 무엇인지를 식별한다. (`이동 알고리즘`)  
 
 <br>
+
+#### 2. 그 변경되는 실제 알고리즘을 클래스로 모델링한다. (`Walking, Jumping...`)  
+
+<br>
+
+#### 3. 2단계에서 모델링한 구체적인 클래스(전략)들을 포괄하는 포괄개념을 `인터페이스 및 추상클래스로` 모델링한다.
+#### ( `Strategy` = Moving interface)  
+
+<br>
+
+#### 4. 2단계에서 모델링한 클래스들을, 포괄개념인 인터페이스를 구현하는 구체전략 클래스(Concrete Strategy)로 연결한다. 
+#### ( `Concrete Strategy` = Walking, Jumping...)
+
+<br><br>
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/1e40d5cc-fff2-4aaa-a862-ec01d025d335">
