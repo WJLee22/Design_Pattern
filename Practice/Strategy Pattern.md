@@ -43,7 +43,9 @@ modeSelected 메서드 내부의 switch 문에 case 를 추가해줘야하고, P
 
 아래의 Strategy Pattern 적용 순서에 따라 위의 코드를 변경해보자.
 
-## <Strategy Pattern 적용 순서>
+<br>
+
+# <Strategy Pattern 적용 순서>
 
 <br>
 
