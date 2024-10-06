@@ -51,7 +51,7 @@ modeSelected 메서드 내부의 switch 문에 case 를 추가해줘야하고, P
 
 <br>
 
-#### 2. 그 변경되는 실제 알고리즘을 클래스로 모델링한다. (`Walking, Jumping...`)  
+#### 2. 그 변경되는 구체적인 실제 알고리즘들을 클래스로 모델링한다. (`Walking, Jumping...`)  
 
 <br>
 
