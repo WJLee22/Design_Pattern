@@ -119,7 +119,7 @@ public class Sungard extends Robot{
 <br>
 <hr>
 
-# <div align="center">🛑<Strategy Pattern 적용 순서>🛑</div>
+# <div align="center">🛑<Strategy Pattern 적용 단계>🛑</div>
 
 <br>
 
