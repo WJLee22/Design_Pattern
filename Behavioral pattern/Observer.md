@@ -6,21 +6,15 @@
 
 ## Observer(옵서버) 패턴이란?
 
-+ 설계하는 패턴  
+<br>
 
-+ 가능하도록해주는 패턴   
++ **데이터의 변경이 발생했을때, 상대 클래스 및 객체에 의존하지 않으면서 데이터 변경을 통지하고자 할 때 사용하는 패턴**
 
-+ 가능하도록해주는 패턴   
++ **데이터의 변경이 발생했다하더라도 통지대상인 상대 클래스 및 객체에 의존하지않기때문에, 새롭게 통지대상 클래스가 추가된다하더라도 데이터를 관리하는 클래스는 영향받지않도록 해주는 패턴**   
 
 <br>
 
->
 
->있도록 해준다.
->
->()
->
->
 
 <br>
 
@@ -393,14 +387,21 @@ public class Main {
     }
 }
 ```
+<br>
 
+#### 자 이제 동시에 여러 출력방식으로 출력해도 + 새롭게 SortView 출력방식이 추가되어도  
+#### 성적정보를 관리하는 중요한 역할을하는 `기존 ScoredRecord코드는 변경되지 않는다.`  
+
+<br>
+<br>
+<hr>
 <br>
 
 ## <div align="center"><성적정보 프로그램 개선: 최종 설계></div>
 
 <br>
 
-성적정보를 다양한 형식으로 출력시켜주는 프로그램을 좀더 개선-정제시켜보자.
+**성적정보를 다양한 형식으로 출력시켜주는 프로그램을 좀더 개선-정제시켜보자.**
 
 현재 ScoreRecord 클래스를 보면, ScoreRecord 클래스가 관리하는 성적정보들에 변경이 있나없나 관찰하고있는 Observer들이 있는데,
 그 Observer들을 등록시켜주는 attach(), Observer들을 제거시켜주는 detach(), 새로운 성적정보가 추가되어 성적정보에 변경이 생겼음을 자신을 관찰하고있는 Observer들에게 알려주는 update() 호출 등등 이러한 `Observer들을 관리하는 기능들`이 현재 ScoreRecord에 존재하고있다.  
@@ -409,24 +410,93 @@ public class Main {
 
 so, 특정 ScoreRecord 클래스에서만 해당 기능들을 제공하는 것 보단, 성적데이터를 관리하는 다른 클래스에서도 기능들을 쓸 수 있도록  설계를 개선해보자.   
 
-Observer들을 관리하는 기능들을 보유하고있는 별도의 Subject 추상클래스를 모델링하고, 성적데이터를 관리하는 클래스들이 이 추상클래스를 상속받아서 가져다쓰도록하면 될 것이다.  
+Observer들을 관리하는 기능들을 보유하고있는 별도의 Subject 클래스를 모델링하고, 성적데이터를 관리하는 클래스들이 이 Subject클래스를 상속받아서 가져다쓰도록하면 될 것이다.  
 
-이제 ScoreRecord클래스가 아니라, ScoreRecord클래스가 상속받는 더 추상적인 개념인 Subject 클래스가 Observer들을 관리한다.  
+이제 ScoreRecord클래스가 아니라, ScoreRecord클래스가 상속받는 포괄개념인 Subject 클래스가 Observer들을 관리한다.  
+
+<br><br>
+
+
+<div align="center"><img src="https://github.com/user-attachments/assets/3c6e098e-335b-4a96-939f-64c2a070761a"></div>
 
 <br>
 
+```java
+import java.util.ArrayList;
+import java.util.List;
 
-#### 동시에 여러 출력방식으로 출력해도 + 새롭게 SortView 출력방식이 추가되어도  
-#### 성적정보를 관리하는 중요한 역할을하는 `기존 ScoredRecord코드는 변경되지 않는다.`  
+public class Subject {
+    private List<Observer> observers = new ArrayList<Observer>(); //Observer 여러개와 * 연관관계.
+
+    public void attach(Observer observer){
+        observers.add(observer);
+    }
+
+    public void detach(Observer observer){
+        observers.remove(observer);
+    }
+
+    protected void notifyObservers(){ //Observer들에게 성적정보 변경사항을 알림.
+        for(Observer observer: observers)
+            observer.update();
+    }
+
+}
+```
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScoredRecord extends Subject{
+
+    private List <Integer> scores = new ArrayList<Integer>();
+
+    public void addScore(int score) {
+        scores.add(score);
+        notifyObservers();
+    }
+
+    public List<Integer> getScoreRecord() {
+        return scores;
+    }
+}
+
+```
 
 <br>
 
+#### EX)
 
+<div align="center"><img src="https://github.com/user-attachments/assets/ef67ea5a-fc7f-4e6a-8a72-f841c0c3f9ed"></div>
 
-
+<br>
+<br>
 
 
 ## 마무리
+
+<br>
+
+>
++ **옵서버 패턴은 통보 대상 객체의 관리를 Subject 클래스와 Observer 인터페이스로 일반화한다.**
+> 
++ **그러면 데이터 변경을 통보하는 클래스(ConcreteSubject)는 통보 대상 클래스/객체(ConcreteObserver)에 대한 의존성을 제거할 수 있다.**
+>  
++ **결과적으로 옵서버 패턴은 통보 대상 클래스나 대상 객체의 변경에도 ConcreteSubject 클래스를 수정없이 그대로 사용 할 수 있도록한다.**
+>
+
+
+<br><br>
+
+`ConcreteSubject 클래스`인 -> scoredRecord 클래스가 관리하는 성적정보에 변경이 생겼으면,  
+
+상대 클래스인 DataSheetView or MinMaxView 와 같은 `ConcreteObserver 클래스`들에게 데이터의 변경을 통지해야하는데,  
+
+이때 해당 **상대클래스에게 의존하지 않으면서 데이터의 변경을 통지하고자하는 경우 Observer(옵서버) 패턴을 사용**한다.
+
+<br>
+
+
 
 <br><br>
 
