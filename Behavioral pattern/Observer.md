@@ -235,7 +235,7 @@ ScoreRecord 클래스를 변경하지않고 성적 출력방식을 변경 및 �
 
 1. 무엇이 변화가 되는가? => 성적정보를 출력-표현하는 방식이 변한다, 성적 정보를 목록형식으로 출력했다가.. 최대값 최소값으로 출력했다가.. 평균값으로도 출력했다가... 즉 구체적인 View 클래스들(DataSheetView, MinMaxView...)
 
-2. 그 변화되는 성적정보를 출력방식들을 하위 개념으로 둔다. 그 하위 클래스들의 포괄개념은, 성적 정보를 관찰하고있다가 변경사항이 생기면 성적정보를 가져다가 현재 출력 방식에 맞게 출력하도록하는 관찰자, 즉 Observer 인터페이스.
+2. 그 변화되는 성적정보를 출력방식들을 하위 개념으로 둔다. 그 하위 클래스들의 포괄개념은, **성적 정보를 관찰하고있다가 변경사항이 생기면 성적정보를 가져다가 현재 출력 방식에 맞게 출력하도록하는 관찰자**, 즉 **`Observer`** 인터페이스.
 
 3. 관찰자 Observer가 관찰하는 대상인, 성적정보 데이터를 관리하는 SCoreRecord 클래스.
 
@@ -257,10 +257,174 @@ so, Strategy패턴과는 다르게, 한 데이터를 여러 다양한 형식으�
  <br>
 
 ```java
+public interface Observer {
+    public void update();
+}
+```
+```java
+import java.util.List;
 
+public class DataSheetView implements Observer{
+    private ScoredRecord scoredRecord;
+    private int viewCount;
+
+    public DataSheetView(ScoredRecord scoredRecord, int viewCount) {
+        this.scoredRecord = scoredRecord;
+        this.viewCount = viewCount;
+    }
+
+    public void update() {
+        List<Integer> record=scoredRecord.getScoreRecord();
+        displaySCores(record, viewCount);
+    }
+
+    private void displaySCores(List<Integer> record, int viewCount) {
+        System.out.println("List of "+ viewCount + " entries");
+        for(int i=0; i<viewCount && i< record.size(); i++) {
+            System.out.println(record.get(i));
+        }
+    }
+}
+```
+```java
+import java.util.Collections;
+import java.util.List;
+
+public class MinMaxView implements Observer{
+    private  ScoredRecord scoredRecord;
+
+    public MinMaxView(ScoredRecord scoredRecord){
+        this.scoredRecord=scoredRecord;
+    }
+
+    public void update(){
+        List<Integer> record=scoredRecord.getScoreRecord();
+        displayScores(record);
+    }
+
+    private void displayScores(List<Integer> record) {
+        int min= Collections.min(record);
+        int max= Collections.max(record);
+
+        System.out.println("Min" + min + " Max "+max);
+    }
+}
+```
+```java
+import java.util.Collections;
+import java.util.List;
+
+public class SortView implements Observer{
+    private  ScoredRecord scoredRecord;
+
+    public SortView(ScoredRecord scoredRecord){
+        this.scoredRecord=scoredRecord;
+    }
+
+    public void update(){
+        List<Integer> record=scoredRecord.getScoreRecord();
+        displayScores(record);
+    }
+
+    private void displayScores(List<Integer> record) {
+        System.out.println("Sorted View");
+        Collections.sort(record);
+
+        for(Integer score: record)
+            System.out.println(score);
+    }
+}
 
 ```
- 
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScoredRecord {
+    private List<Observer> observers = new ArrayList<Observer>(); //Observer 여러개와 * 연관관계.
+
+    public void attach(Observer observer){
+        observers.add(observer);
+    }
+
+    public void detach(Observer observer){
+        observers.remove(observer);
+    }
+
+    private List <Integer> scores = new ArrayList<Integer>();
+
+    public void addScore(int score) {
+        scores.add(score);
+
+        for(Observer observer: observers)
+            observer.update();
+    }
+
+    public List<Integer> getScoreRecord() {
+        return scores;
+    }
+}
+
+```
+```java
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        ScoredRecord scoredRecord = new ScoredRecord();
+        Observer minMaxView = new MinMaxView(scoredRecord);
+        Observer dataSheetView3 = new DataSheetView(scoredRecord, 3);
+        Observer dataSheetView5 = new DataSheetView(scoredRecord, 5);
+
+        scoredRecord.attach(minMaxView);
+        scoredRecord.attach(dataSheetView3);
+        scoredRecord.attach(dataSheetView5);
+
+        Observer sortedView = new SortView(scoredRecord);
+        scoredRecord.attach(sortedView); //옵서버로 등록.
+
+        Random random = new Random();
+
+        for(int index=1; index <= 5; index++) {
+            int score= random.nextInt(101);
+            System.out.println("Adding "+score);
+            scoredRecord.addScore(score);
+        }
+    }
+}
+```
+
+<br>
+
+## <div align="center"><성적정보 프로그램 개선: 최종 설계></div>
+
+<br>
+
+성적정보를 다양한 형식으로 출력시켜주는 프로그램을 좀더 개선-정제시켜보자.
+
+현재 ScoreRecord 클래스를 보면, ScoreRecord 클래스가 관리하는 성적정보들에 변경이 있나없나 관찰하고있는 Observer들이 있는데,
+그 Observer들을 등록시켜주는 attach(), Observer들을 제거시켜주는 detach(), 새로운 성적정보가 추가되어 성적정보에 변경이 생겼음을 자신을 관찰하고있는 Observer들에게 알려주는 update() 호출 등등 이러한 `Observer들을 관리하는 기능들`이 현재 ScoreRecord에 존재하고있다.  
+
+그런데 이러한 Observer들을 관리하는 기능들은 ScoreRecord클래스만 쓸 수 있는게 아니라, 그 다른 어떤 성적을 관리하는 클래스에서도 위와같은 기능들이 필요할 것이다.     
+
+so, 특정 ScoreRecord 클래스에서만 해당 기능들을 제공하는 것 보단, 성적데이터를 관리하는 다른 클래스에서도 기능들을 쓸 수 있도록  설계를 개선해보자.   
+
+Observer들을 관리하는 기능들을 보유하고있는 별도의 Subject 추상클래스를 모델링하고, 성적데이터를 관리하는 클래스들이 이 추상클래스를 상속받아서 가져다쓰도록하면 될 것이다.  
+
+이제 ScoreRecord클래스가 아니라, ScoreRecord클래스가 상속받는 더 추상적인 개념인 Subject 클래스가 Observer들을 관리한다.  
+
+<br>
+
+
+#### 동시에 여러 출력방식으로 출력해도 + 새롭게 SortView 출력방식이 추가되어도  
+#### 성적정보를 관리하는 중요한 역할을하는 `기존 ScoredRecord코드는 변경되지 않는다.`  
+
+<br>
+
+
+
+
+
 
 ## 마무리
 
