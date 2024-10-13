@@ -219,7 +219,7 @@ public class Main {
 
 ### <div align="center">이 OCP 위반문제를 해결해보자.</div>
 
-<br><br>
+<br><br><br>
 
 ## 설계 개선(by Strategy 패턴 응용)
 
@@ -239,17 +239,20 @@ ScoreRecord 클래스를 변경하지않고 성적 출력방식을 변경 및 �
 
 3. 관찰자 Observer가 관찰하는 대상인, 성적정보 데이터를 관리하는 SCoreRecord 클래스.
 
-4. Observer는 성적 정보들을 동시에 다른 형식으로 출력해준다.
-so, Strategy패턴과는 다르게, 한 데이터를 여러 다양한 형식으로 출력할 수 있게끔 SCoreRecord 클래스와 Observer는 다중성 * 연관관계를 가진다.   
+4. Observer는 성적 정보들을 동시에 다른 형식으로 출력해준다.  
+so, Strategy패턴과는 다르게, 한 데이터를 여러 다양한 형식으로 출력할 수 있게끔 SCoreRecord 클래스와 Observer는 다중성 * 연관관계를 가진다. 즉, 기존처럼 구체적인 View 객체들과 직접 연관관계를 맺는것이 아닌, 포괄개념인 Observer들과 연관관계를 맺도록 변경한다.  
 
 5. 그리고, 성적 정보들을 출력해주는 클래스들은 성적 정보가 변했는지를 SCoreRecord로부터 통지받아야하기때문에, 성적 정보의 변경을 통지해주는 update() 메서드. 성적 정보가 업데이트되었으면 해당 최신정보를 출력해야 해야하기때문이다.(자기들만의 형식으로)  
 단, 각 출력 형식 클래스들은 SCoreRecord로부터 직접 최신 성적 데이터를 받아오기떄문에 SCoreRecord와 직접 연관관계를 맺는다.  
 
-<br>
+6. 이제 여기에 성적 정보들을 정렬하여 출력해주는 SortView 클래스를 추가해보자. 이제는 새로운 출력 방식을 추가해도 OCP 원칙에 만족하는 것을 확인해볼 수 있을 것이다.
+   
+<br><br><hr>
 
-### <설계 적용>
 
-<div align="center"><img src="https://github.com/user-attachments/assets/5dc1bfb4-798f-44bf-92f5-69208b3241fc"></div>
+## <div align="center"><개선된 설계></div>
+
+<div align="center"><img src="https://github.com/user-attachments/assets/a959926b-5935-4a2b-b0e9-4f469c41b2cd"></div>
 
  <br>
 
