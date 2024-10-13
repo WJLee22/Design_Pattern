@@ -24,29 +24,97 @@
 
 <br>
 
-## 성적 출력 예제를 통해 알아보는 Command Pattern      
+## 성적 출력 예제를 통해 알아보는 Observer Pattern      
 
 <br>
 
-**을 우리가 만들고자한다.**  
+**성적정보를 여러가지 방식으로 출력해주는 프로그램을 만들고자한다.**  
 
-
--    클래스: ~~기능을 제공하는 클래스 
--  클래스: ~~하는 클래스
+>여러가지 출력방식을 구현하기에 앞서, 목록형태로만 출력되도록 일단 구현해보자.
 
 <br>
 
-**<div align="center">이 ~~를 설계하면 아래와 같다.</div>**
+- ScoredRecord 클래스: 성적정보들을 저장/관리하는 클래스 
+- DataSheetView클래스: 성적을 목록형태로 출력하는 클래스
+
+<br>
+
+**<div align="center">이 성적정보 출력 프로그램을 설계하면 아래와 같다.</div>**
 
 <br>
 
 ## <기존 설계> 
 
+![image](https://github.com/user-attachments/assets/be3f9a48-fda4-42de-926e-802919389281)
 
 
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ScoredRecord {
+    private DataSheetView dataSheetView;
+    private List<Integer> scores = new ArrayList<Integer>();
+
+    public void setDataSheetView(DataSheetView dataSheetView) {
+        this.dataSheetView = dataSheetView;
+    }
+
+    public void addScore(int score) {
+        scores.add(score);
+        dataSheetView.update(); //출력 클래스에게 성적 정보 변경 통지.
+    }
+
+    public List<Integer> getScoreRecord() {
+        return scores;
+    }
+}
+```
+```java
+import java.util.List;
+
+public class DataSheetView {
+    private ScoredRecord scoredRecord;
+    private int viewCount;
+
+    public DataSheetView(ScoredRecord scoredRecord, int viewCount) {
+        this.scoredRecord = scoredRecord;
+        this.viewCount = viewCount;
+    }
+
+    public void update() {
+        List<Integer> record=scoredRecord.getScoreRecord();
+        displaySCores(record, viewCount);
+    }
+
+    private void displaySCores(List<Integer> record, int viewCount) {
+        System.out.println("List of "+ viewCount + " entries");
+        for(int i=0; i<viewCount && i< record.size(); i++) {
+            System.out.println(record.get(i));
+        }
+    }
+}
+
+```
+```java
+public class Main {
+    public static void main(String[] args) {
+        ScoredRecord scoredRecord = new ScoredRecord();
+        DataSheetView dataSheetView = new DataSheetView(scoredRecord, 3);
+        scoredRecord.setDataSheetView(dataSheetView);
+
+        for(int index=1; index <= 5; index++) {
+            int score= index*10;
+            System.out.println("Adding "+score);
+            scoredRecord.addScore(score);
+        }
+    }
+}
+
+```
 <br>
 
-## 기존 설계의 문제점  
+## <기존 설계에 추가 요구사항 적용> 
 ### <p align="center">`<요구사항1>`</p> 
 
 
@@ -73,59 +141,13 @@
 예를 들어 처음에는 기존처럼 목록형태로 출력하고, 나중에 실행중에 최소/최대값 형태로 출력하고자 한다면?
 
 
-<hr>
+<hr><br>
 
-#### 기존코드
-```java
-import java.util.Collections;
-import java.util.List;
-
-public class MinMaxView {
-    private  ScoredRecord scoredRecord;
-
-    public MinMaxView(ScoredRecord scoredRecord){
-        this.scoredRecord=scoredRecord;
-    }
-
-    public void update(){
-        List<Integer> record=scoredRecord.getScoreRecord();
-        displayScores(record);
-    }
-
-    private void displayScores(List<Integer> record) {
-        int min= Collections.min(record);
-        int max= Collections.max(record);
-
-        System.out.println("Min" + min + " Max "+max);
-    }
-}
-```
-```java
-import java.util.ArrayList;
-import java.util.List;
-
-public class ScoredRecord {
-    private DataSheetView dataSheetView;
-    private List<Integer> scores = new ArrayList<Integer>();
-
-    public void setDataSheetView(DataSheetView dataSheetView) {
-        this.dataSheetView = dataSheetView;
-    }
-
-    public void addScore(int score) {
-        scores.add(score);
-        dataSheetView.update();
-    }
-
-    public List<Integer> getScoreRecord() {
-        return scores;
-    }
-}
-```
+![image](https://github.com/user-attachments/assets/b897b82a-777c-4918-92cc-379040bee67f)
 
 <br>
 
-#### 요구사항에 맞게 변경된 ScoredRecord클래스 코드
+### <요구사항에 맞게 변경된 ScoredRecord클래스 코드>
 
 ```java
 import java.util.ArrayList;
@@ -147,14 +169,38 @@ public class ScoredRecord {
         for(DataSheetView dataSheetView : dataSheetViews)
             dataSheetView.update();
     }
-
+    
+    public void addDataSheetView(DataSheetView dataSheetView) {
+        dataSheetViews.add(dataSheetView);
+    }
+    
     public List<Integer> getScoreRecord() {
         return scores;
     }
 }
 
 ```
+```java
+public class Main {
+    public static void main(String[] args) {
+        ScoredRecord scoredRecord = new ScoredRecord();
+        MinMaxView minMaxView = new MinMaxView(scoredRecord);
+        DataSheetView dataSheetView3 = new DataSheetView(scoredRecord, 3);
+        DataSheetView dataSheetView5 = new DataSheetView(scoredRecord, 5);
 
+        scoredRecord.setMinMaxView(minMaxView);
+        scoredRecord.addDataSheetView(dataSheetView3);
+        scoredRecord.addDataSheetView(dataSheetView5);
+
+        for(int index=1; index <= 5; index++) {
+            int score= index*10;
+            System.out.println("Adding "+score);
+            scoredRecord.addScore(score);
+        }
+    }
+}
+
+```
 <br>
 
 ### <p align="center">`<기존설계의 문제점>`</p> 
@@ -185,7 +231,7 @@ ScoreRecord 클래스를 변경하지않고 성적 출력방식을 변경 및 �
 
 <br>
 
-### 설계 단계
+### <설계 단계>
 
 1. 무엇이 변화가 되는가? => 성적정보를 출력-표현하는 방식이 변한다, 성적 정보를 목록형식으로 출력했다가.. 최대값 최소값으로 출력했다가.. 평균값으로도 출력했다가... 즉 구체적인 View 클래스들(DataSheetView, MinMaxView...)
 
@@ -196,11 +242,21 @@ ScoreRecord 클래스를 변경하지않고 성적 출력방식을 변경 및 �
 4. Observer는 성적 정보들을 동시에 다른 형식으로 출력해준다.
 so, Strategy패턴과는 다르게, 한 데이터를 여러 다양한 형식으로 출력할 수 있게끔 SCoreRecord 클래스와 Observer는 다중성 * 연관관계를 가진다.   
 
-5. 그리고, 성적 정보들을 출력해주는 클래스들은 성적 정보가 변했는지를 SCoreRecord로부터 통지받아야하기때문에, 성적 정보의 변경을 통지해주는 update() 메서드. 성적 정보가 업데이트되었으면 해당 최신정보를 출력해야 해야하기때문이다.(자기들만의 형식으로)
+5. 그리고, 성적 정보들을 출력해주는 클래스들은 성적 정보가 변했는지를 SCoreRecord로부터 통지받아야하기때문에, 성적 정보의 변경을 통지해주는 update() 메서드. 성적 정보가 업데이트되었으면 해당 최신정보를 출력해야 해야하기때문이다.(자기들만의 형식으로)  
+단, 각 출력 형식 클래스들은 SCoreRecord로부터 직접 최신 성적 데이터를 받아오기떄문에 SCoreRecord와 직접 연관관계를 맺는다.  
 
-6. 
- 
+<br>
 
+### <설계 적용>
+
+<div align="center"><img src="https://github.com/user-attachments/assets/5dc1bfb4-798f-44bf-92f5-69208b3241fc"></div>
+
+ <br>
+
+```java
+
+
+```
  
 
 ## 마무리
