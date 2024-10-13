@@ -486,7 +486,7 @@ public class ScoredRecord extends Subject{
 >
 
 
-<br><br>
+<br><hr><br>
 
 `ConcreteSubject 클래스`인 -> scoredRecord 클래스가 관리하는 성적정보에 변경이 생겼으면,  
 
@@ -494,9 +494,35 @@ public class ScoredRecord extends Subject{
 
 이때 해당 **상대클래스에게 의존하지 않으면서 데이터의 변경을 통지하고자하는 경우 Observer(옵서버) 패턴을 사용**한다.
 
+<br><hr><br>
+
+## 커맨드 패턴의 일반적인 설계구조
+
 <br>
 
+<div align="center">
+<img src="https://github.com/user-attachments/assets/082b2acc-6559-4dad-9f8c-8d9384266c75">
+</div>
 
+> 출처: Java객체지향 디자인패턴(한빛미디어) 
 
+<br><br>
+
+> + **`Subject 클래스`: ConcreteObserver 객체를 관리하는 클래스**
+
+<br>
+
+> + **`Observer 인터페이스`: 데이터의 변경을 통보 받는 인터페이스**
+
+<br>
+
+> + **`ConcreteSubject 클래스`: 변경 관리 대상이되는 데이터(ex 성적정보)가 있는 클래스**
+
+<br>
+
+> + **`ConcreteObserver 클래스`: ConcreteSubject로부터 변경을 통보 받는 클래스**
+
+<br>
+<br>
 <br><br>
 
