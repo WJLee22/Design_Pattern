@@ -481,7 +481,9 @@ public class ScoredRecord extends Subject{
 + **옵서버 패턴은 통보 대상 객체의 관리를 Subject 클래스와 Observer 인터페이스로 일반화한다.**
 > 
 + **그러면 데이터 변경을 통보하는 클래스(ConcreteSubject)는 통보 대상 클래스/객체(ConcreteObserver)에 대한 의존성을 제거할 수 있다.**
->  
+>
++ **ConcreteSubject와 ConcreteObserver간의 직접적인 연관관계를 제거하고 -> 상위개념인 Subject 클래스와 Observer 인터페이스끼리 연관관계를 맺도록하는 것이다**
+>
 + **결과적으로 옵서버 패턴은 통보 대상 클래스나 대상 객체의 변경에도 ConcreteSubject 클래스를 수정없이 그대로 사용 할 수 있도록한다.**
 >
 
