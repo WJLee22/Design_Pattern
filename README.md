@@ -12,6 +12,7 @@
   > 객체의 생성 방식과 관련된 디자인 패턴
   
   + <a href="Creational Pattern/Singleton.md">SingleTon</a>
+  + <a href="Creational Pattern/Builder.md">Builder</a>
 
 <br>
 
