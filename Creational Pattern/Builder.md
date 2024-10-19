@@ -10,7 +10,7 @@
 
 + **객체를 생성할때, 생성자의 인자가 많은 경우에 사용**
 
-+ **생성자의 인자들 중에서, 우리가 반드시 제공해줘야하는 `필수적 인자`들과 + 재공하지않아도되는 `선택적 인자`가 혼합되어 있는 경우에 사용되는 생성형 디자인패턴**
++ **생성자의 인자들 중에서, 우리가 반드시 제공해줘야하는 `필수적 인자`들과 + 재공하지않아도되는 `선택적 인자`가 혼합되어 있는 경우에 유용하게 사용되는 생성형 디자인패턴**
 
 + **Immutable 객체(변경할 수 없는 객체)를 생성하고 싶은 경우에 사용. 객체가 생성된 이후 수정이 불가능**        
 
@@ -218,19 +218,39 @@ public class Book {
         private int pages;
         private String category;
 
-        //필수적인 속성값을 초기화해주는 생성자
+        public Long getId() {
+            return id;
+        }
+
+        public String getIsbn() {
+            return isbn;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public int getPages() {
+            return pages;
+        }
+
+        public String getCategory() {
+            return category;
+        }
+
+        //필수적인 속성들은 생성자로 설정해줌 
         public BookBuilder(Long id, String isbn) {
             this.id = id;
             this.isbn = isbn;
         }
 
         //보통 setter 메서드들은 반환형이 void 지만, 이 Builder는 반환형이 this로 - 자신을 반환함.
-        //메서드의 이름은 속성의 이름이다.
-        public BookBuilder id(Long id) {this.id = id; return this;}// 메서드 체이닝을 위해 현재 객체 반환}
-
-        public BookBuilder isbn(String isbn) {this.isbn = isbn; return this;}
-
-        public BookBuilder title(String title) {this.title = title; return this;}
+        //선택적인 속성들은 별도의 메서드로 설정해줌.메서드의 이름은 속성의 이름과 동일하게 for 가독성. 
+        public BookBuilder title(String title) {this.title = title; return this;}// 메서드 체이닝을 위해 현재 객체 반환
 
         public BookBuilder author(String author) {this.author = author; return this;}
 
@@ -261,21 +281,89 @@ public class Main {
         //각 메서드의 반환값이 this이므로, 반환받은 객체에 연속적으로 접근하여 메서드를 호출하는 -> 메서드 체이닝이 가능하다.
         Book book1 = new Book.BookBuilder(1L, "isbn1234").author("WonJun Lee").build();
         Book book2 = new Book.BookBuilder(2L, "isbn2345").pages(360).author("WonJun Lee").build();
+        System.out.println(book2.getAuthor());
     }
 }
 ```
 
 <br>
 
-이처럼 직접 Book 인스턴스를 생성하는 것이 아닌, Book 클래스 내부의 BookBuilder 이너클래스의 build 메서드로 Book 인스턴스를 생성하는 모습이다. 
+이처럼 직접 Book 인스턴스를 생성하는 것이 아닌, `Book 클래스 내부의 BookBuilder 이너클래스의 build 메서드로 Book 인스턴스를 생성하는 모습`이다. 
 
 이전에 Telescoping Constructor의 경우에는 전달되는 인자의 순서가 중요했었다.  
 
 인자의 순서에 따라 인자를 전달받는 메서드의  매개변수가 원래 의도와는 다른 값을 전달 받을 수 있다는 위험이있기때문이다.  
-하지만 이 Builder 패턴을 사용하면, 메서드 체이닝 기법을 이용하기때문에, 어떤 속성을 어떤 순서로 전달해주던간에 상관없이  명시적으로 해당 속성에 대한 인자를 전달해 줄 수 있게된다. 
+하지만 이 Builder 패턴을 사용하면, `메서드 체이닝 기법`을 이용하기때문에, 어떤 속성을 어떤 순서로 전달해주던간에 상관없이 명시적으로 해당 속성에 대한 인자를 전달해 줄 수 있게된다.  
+속성값을 설정하는 메서드의 이름자체가 속성의 이름을 반영하고있기때문에 가독성도 매우 뛰어나다.  
 
-또한, Book 인스턴스에는 별도로 Setter 메서드를 구현해놓지 않았기때문에 immutable Object 조건도 만족하게된다.  
+또한, Book 인스턴스에는 별도로 Setter 메서드를 구현해놓지 않았기때문에 `immutable Object` 조건도 만족하게된다.  
 
+<br>
+
+**즉, 빌더 패턴을 사용하면 객체를 생성할 때 필요한 속성만 설정할 수 있어, 가독성과 유지보수성을 높이는 데 도움이 된다.**  
+
+**또한, 일단 객체를 만들어두면 이 객체의 상태를 변경시키고 싶지않은 경우에 매우 효과적인 패턴이다.**  
+
+<br>
+
+## Lombok 라이브러리 사용하여 Builder패턴 최적화
+
+<br>
+
+다만 이 Builder패턴은 유용하기는 하나, 
+
+Builder클래스를 내부클래스로 별도로 만들어주어야하고 + 속성의 갯수만큼 속성설정 메서드들을 만들어주어야하며 + build 메서드도 만들어주어야하기때문에 **기존코드보다 코드의 양이 상당히 증가하게되는 경향이있다.**  
+
+<br> 
+
+그래서 **Builder패턴을 그대로 사용하면서 코드를 단순화할 수 있는 방법**으로 **`Lombok(롬복)`** 이라는 라이브러리를 사용한다.  
+
+<br>
+
++ Lombok 라이브러리를 사용하면 Builder 어노테이션을 사용할 수 있기때문에, Builder 어노테이션을 통해 Builder 클래스 내부의 코드를 자동으로 생성할 수 있게된다.  
+
++ **`@Builder 어노테이션`** 을 사용하면, Lombok이 자동으로 내부에 빌더 inner클래스를 생성해준다.  
+
++ 또한, 빌더 클래스에서는 각 필드에 대한 설정 메서드가 생성되어있으며 이 메서드들은 this를 반환하므로 메서드 체이닝도 구현되어있다. 
+
++ **`@Getter 어노테이션`** 을 사용하면, getter 메서드 역시 자동으로 생성해준다.
+
++ **`@Setter 어노테이션`** 도 역할은 같으나, **`immutable Object 구현을 위해`** 따로 적용시키지않았다.
+
++ **`@NonNull 이노테이션`** 을 적용시키면 해당 필드는 필수적인 속성이되어 반드시 값을 할당해주어한다. 그렇지않으면 NullPointerException 예외를 발생시켜준다.
+
++ 즉, Lombok 라이브러리를 사용하면 Builder 패턴을 간편하게 적용시킬 수 있게된다.
+
+     <br>
+
+```java
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+
+@Getter // getter 메소드를 자동으로 생성
+@Builder // @Builder 어노테이션을 사용하면 Lombok이 해당 클래스에 빌더 패턴을 자동으로 적용.
+public class Book {
+    @NonNull
+    private Long id; // 필수적인 속성
+    @NonNull
+    private String isbn; // 필수적인 속성
+    private String title;
+    private String author;
+    private int pages;
+    private String category;
+}
+```
+```java
+public class Main {
+    public static void main(String[] args) {
+        Book book1 = new Book.BookBuilder().id(1L).isbn("isbn1234").author("WonJun Lee").build();
+        Book book2 = new Book.BookBuilder().id(2L).isbn("isbn2345").pages(360).author("WonJunLee").build();
+        System.out.println(book2.getAuthor());
+    }
+}
+
+```
 
 
 
