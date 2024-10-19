@@ -187,6 +187,96 @@ JavaBeans 패턴은 명시적으로 **`set+속성이름`** 의 **`Setter 메서�
 > }
 > ```
 
+<br>
+
+Builder 패턴을 적용해서 기존 Book 클래스를 개선시켜보자. 
+
+<br>
+
+1. 먼저  Book 클래스에 대한 인스턴스는 Book 클래스의 inner Class인 BookBuilder를 통해서 생성하도록한다.
+2. 메서드 체이닝을 통해, 기존 Telescoping Constructor 패턴의 가독성 문제를 해결한다.
+3. 기존 JavaBeans 패턴의 immutable Object 생성불가문제를 해결하기위해 Setter 메서드는 구현하지 않도록한다.
+
+<br><br>
+
+### Builder 패턴을 적용시킨 코드
+
+```java
+public class Book {
+    private Long id; //필수적인 속성
+    private String isbn; //필수적인 속성
+    private String title;
+    private String author;
+    private int pages;
+    private String category;
+
+    public static class BookBuilder {
+        private Long id; //필수적인 속성
+        private String isbn; //필수적인 속성
+        private String title;
+        private String author;
+        private int pages;
+        private String category;
+
+        //필수적인 속성값을 초기화해주는 생성자
+        public BookBuilder(Long id, String isbn) {
+            this.id = id;
+            this.isbn = isbn;
+        }
+
+        //보통 setter 메서드들은 반환형이 void 지만, 이 Builder는 반환형이 this로 - 자신을 반환함.
+        //메서드의 이름은 속성의 이름이다.
+        public BookBuilder id(Long id) {this.id = id; return this;}// 메서드 체이닝을 위해 현재 객체 반환}
+
+        public BookBuilder isbn(String isbn) {this.isbn = isbn; return this;}
+
+        public BookBuilder title(String title) {this.title = title; return this;}
+
+        public BookBuilder author(String author) {this.author = author; return this;}
+
+        public BookBuilder pages(int pages) {this.pages = pages; return this;}
+
+        public BookBuilder category(String category) {this.category = category; return this;}
+
+        //build 메서드는, BookBuilder 자신이 갖고있는 속성정보로 book인스턴스의 속성정보를 설정하고, 그 book인스턴스를 반환한다.
+        //이 build 메서드를 가지고, BookBuilder인스턴스를 통해서 Book인스턴스를 생성&전달받을 수 있다.
+        public Book build() {
+            Book book = new Book();
+            book.id = this.id;
+            book.isbn = this.isbn;
+            book.title = this.title;
+            book.author = this.author;
+            book.pages = this.pages;
+            book.category = this.category;
+            return book;
+        }
+    }
+}
+```
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        //BookBuilder 인스턴스의 속성을 설정함과동시에, 해당 속성값을 그대로 갖는 Book 인스턴스를 생성&반환받음.
+        //각 메서드의 반환값이 this이므로, 반환받은 객체에 연속적으로 접근하여 메서드를 호출하는 -> 메서드 체이닝이 가능하다.
+        Book book1 = new Book.BookBuilder(1L, "isbn1234").author("WonJun Lee").build();
+        Book book2 = new Book.BookBuilder(2L, "isbn2345").pages(360).author("WonJun Lee").build();
+    }
+}
+```
+
+<br>
+
+이처럼 직접 Book 인스턴스를 생성하는 것이 아닌, Book 클래스 내부의 BookBuilder 이너클래스의 build 메서드로 Book 인스턴스를 생성하는 모습이다. 
+
+이전에 Telescoping Constructor의 경우에는 전달되는 인자의 순서가 중요했었다.  
+
+인자의 순서에 따라 인자를 전달받는 메서드의  매개변수가 원래 의도와는 다른 값을 전달 받을 수 있다는 위험이있기때문이다.  
+하지만 이 Builder 패턴을 사용하면, 메서드 체이닝 기법을 이용하기때문에, 어떤 속성을 어떤 순서로 전달해주던간에 상관없이  명시적으로 해당 속성에 대한 인자를 전달해 줄 수 있게된다. 
+
+또한, Book 인스턴스에는 별도로 Setter 메서드를 구현해놓지 않았기때문에 immutable Object 조건도 만족하게된다.  
+
+
 
 
 
