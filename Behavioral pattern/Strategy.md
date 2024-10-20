@@ -258,8 +258,8 @@ public class PunchStrategy implements AttackStrategy{
 ```java 
 public class Main {
     public static void main(String[] args) {
-        Robot r1=new TaekwonV("insang1");
-        Robot r2=new Atom("insang2");
+        Robot r1=new TaekwonV("WJLee1");
+        Robot r2=new Atom("WJLee2");
 
         System.out.println(r1.getName());
         r1.setAttackStrategy(new MissileStrategy());
@@ -273,7 +273,7 @@ public class Main {
         r2.move();
         r2.attack();
 
-        Robot r3=new Sungard("insang3");
+        Robot r3=new Sungard("WJLee3");
         r3.setAttackStrategy(new MissileStrategy());
         r3.setMovingStrategy(new FlyingStrategy());
     }
@@ -320,7 +320,7 @@ r1.setAttackStrategy(new PunchStrategy()); //공격방법 => 펀치
 <br> 
 
 ```
-Robot r3=new Sungard("insang3");
+Robot r3=new Sungard("WJLee3");
 r3.setAttackStrategy(new MissileStrategy());
 ```
 
@@ -354,7 +354,7 @@ public class JumpingStrategy implements MovingStrategy{
 ```java
 public class Main {
     public static void main(String[] args) {
-        Robot r1=new TaekwonV("insang1");
+        Robot r1=new TaekwonV("WJLee1");
 
         System.out.println(r1.getName());
         r1.setMovingStrategy(new JumpingStrategy()); //Jumping 이라는 새로운 전략을 추가하고, r1객체의 이동전략을 Jumping으로 동적 변경.  
