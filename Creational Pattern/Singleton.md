@@ -50,7 +50,7 @@
     public Account(String owner, int balance) {
         this.owner = owner;
         this.balance = balance;
-        this.myLogger = new Logger();
+        this.myLogger = new Logger(); //Account 인스턴스 생성시마다 새로운 Logger 인스턴스도 생성
     }
 
     public String getOwner() {
@@ -82,7 +82,7 @@
 
     public Logger() {
         try {
-            FileWriter fw = new FileWriter(LOGFILE);
+            FileWriter fw = new FileWriter(LOGFILE); //log.txt 파일을 다시 open하여 이전내용에 덮어쓰게됨
             writer = new PrintWriter(fw, true);
         } catch (IOException e) {
         }
@@ -113,11 +113,15 @@
 
    <br>
 
-위 코드를보면, Account 인스턴스 하나당 새로운 Logger 인스턴스 하나를 생성해서 1대1로 대응되는 관계를 보인다. 
-그래서 Logger 인스턴스가 생성될때마다 log.txt파일을 새로 오픈하고 기존의 log.txt 파일에 쓰인 내용들을
-덮어써버리는 문제가 발생한다. 
+위 코드를보면, Account 인스턴스 하나당 새로운 Logger 인스턴스 하나를 생성해서 1대1로 대응되는 관계를 보인다.  
+
+여기서 새로운 Logger 인스턴스가 생성이되면 new FileWriter로 다시 파일을 open 하게된다.  
+
+so, Account 인스턴스가 생성될때마다 대응되는 Logger 인스턴스가 생성되면서 log.txt파일을 새로 open하고 **기존의 log.txt 파일에 쓰인 내용들을
+덮어써버리는 문제가 발생한다.**  
+즉 기존 로그 내용들은 사라지게되는 치명적인 문제가 발생한다.  
    
-이 문제를 해결하기위해선 하나의 Logger 인스턴스를 만들고 이를 모든 account 인스턴스가 공유하도록하면 
+이 문제를 해결하기위해선 **하나의 Logger 인스턴스를 만들고 이를 모든 account 인스턴스가 공유**하도록하면 
  log.txt 파일에 다음 내용이 덮어쓰여지지않고 다음줄에 출력될 것이다. 
 
 <br>
