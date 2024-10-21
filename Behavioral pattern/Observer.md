@@ -406,11 +406,11 @@ public class Main {
 현재 ScoreRecord 클래스를 보면, ScoreRecord 클래스가 관리하는 성적정보들에 변경이 있나없나 관찰하고있는 Observer들이 있는데,
 그 Observer들을 등록시켜주는 attach(), Observer들을 제거시켜주는 detach(), 새로운 성적정보가 추가되어 성적정보에 변경이 생겼음을 자신을 관찰하고있는 Observer들에게 알려주는 update() 호출 등등 이러한 `Observer들을 관리하는 기능들`이 현재 ScoreRecord에 존재하고있다.  
 
-그런데 이러한 Observer들을 관리하는 기능들은 ScoreRecord클래스만 쓸 수 있는게 아니라, 그 다른 어떤 성적을 관리하는 클래스에서도 위와같은 기능들이 필요할 것이다.     
+그런데 이러한 Observer들을 관리하는 기능들은 ScoreRecord클래스만 쓸 수 있는게 아니라, 그 다른 어떤 데이터들을 관리하는 클래스에서도 위와같은 기능들이 필요할 것이다.     
 
-so, 특정 ScoreRecord 클래스에서만 해당 기능들을 제공하는 것 보단, 성적데이터를 관리하는 다른 클래스에서도 기능들을 쓸 수 있도록  설계를 개선해보자.   
+so, 특정 ScoreRecord 클래스에서만 해당 기능들을 제공하는 것 보단, 데이터를 관리하는 다른 클래스에서도 기능들을 쓸 수 있도록  설계를 개선해보자.   
 
-Observer들을 관리하는 기능들을 보유하고있는 별도의 Subject 클래스를 모델링하고, 성적데이터를 관리하는 클래스들이 이 Subject클래스를 상속받아서 가져다쓰도록하면 될 것이다.  
+Observer들을 관리하는 기능들을 보유하고있는 별도의 Subject 클래스를 모델링하고, 데이터를 관리하는 클래스들이 이 Subject클래스를 상속받아서 가져다쓰도록하면 될 것이다.  
 
 이제 ScoreRecord클래스가 아니라, ScoreRecord클래스가 상속받는 포괄개념인 Subject 클래스가 Observer들을 관리한다.  
 
