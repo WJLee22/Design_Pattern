@@ -8,11 +8,18 @@
 <br>
 
 ## [LIST]
-+ ### Creational Patttern
++ ### Creational Pattern
   > 객체의 생성 방식과 관련된 디자인 패턴
   
   + <a href="Creational Pattern/Singleton.md">SingleTon</a>
   + <a href="Creational Pattern/Builder.md">Builder</a>
+
+<br>
+
++ ### Structural Patttern
+  > 구조를 유연하고 효율적으로 유지하면서 클래스나 객체를 조합해 더 큰 구조를 만드는 패턴
+  
+  + <a href="Structural Pattern/Singleton.md">Decorator</a>
 
 <br>
 
