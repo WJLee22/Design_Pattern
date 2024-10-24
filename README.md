@@ -19,7 +19,7 @@
 + ### Structural Patttern
   > 구조를 유연하고 효율적으로 유지하면서 클래스나 객체를 조합해 더 큰 구조를 만드는 패턴
   
-  + <a href="Structural Pattern/Singleton.md">Decorator</a>
+  + <a href="Structural Pattern/Decorator Pattern.md">Decorator</a>
 
 <br>
 
