@@ -458,4 +458,10 @@ new RoadDisplayWithCrossing(new RoadDisplayWithTraffic(new RoadDisplayWithLane(r
 
 <br>
 <br>
+
++ **여기서, Decorator가 Component와 연관관계를 맺도록 설계된 이유는
+부가기능인 ConcreteDecorator들이 자기들 뿐만아니라 기본기능 ConcreteComponent도 참조할 수 있도록 하기 위함이다**
+
+<br>
+<br>
 <br><br>
