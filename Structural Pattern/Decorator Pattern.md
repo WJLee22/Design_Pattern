@@ -407,6 +407,8 @@ Display roadWithLaneTrafficCrossing = new RoadDisplayWithCrossing(roadWithLaneTr
 new RoadDisplayWithCrossing(new RoadDisplayWithTraffic(new RoadDisplayWithLane(road))).draw();
 ```
 
+> 출력되는 순서는 내부에서 외부쪽으로, 즉 오른쪽에서 왼쪽순 (road -> Lane -> Traffic -> Crossing)
+
 <br><br>
 
 <div align="center">
