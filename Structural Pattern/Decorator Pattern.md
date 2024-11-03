@@ -387,18 +387,75 @@ public class Main {
 
 ```
 
-<br>
+<br><br>
+
+```java 
+Display roadWithLaneTrafficCrossing = new RoadDisplayWithCrossing(roadWithLaneTraffic);
+```  
+
+위의 코드처럼, 인자값을 달리하여 여러가지 표시 기능들을 조합해볼 수 있다.  
 
 위와 같은 설계로, 추가된 새로운 기능을 제공하기위해서 조합 경우의수의 증가로 클래스의 갯수가 기하급수적으로 늘어나는 단점이 해결되었다.  
 
 **클래스의 갯수가 기능의 갯수와 선형적으로 증가하는 이상적인 형태가 된것이다.**
 
+<br><br>
 
+**✅여기서, 위 코드처럼 기본 기능에 부가기능들을 조합-데코레이팅하는 과정을 아래와같이 `체이닝을 이용하여 한줄로 간단하게 작성`해볼 수 있다.** 
 
+```java
+new RoadDisplayWithCrossing(new RoadDisplayWithTraffic(new RoadDisplayWithLane(road))).draw();
+```
 
+<br><br>
 
+<div align="center">
+<img src="https://github.com/user-attachments/assets/d83098ff-61a3-493f-9b79-271cc11dead8">
+</div>
+
+> 출처: Java객체지향 디자인패턴(한빛미디어)
+
+<br><br>
+
+## 마무리
 
 <br>
 
+>
++ **데코레이터 패턴은 기본 기능에 추가할 수 있는 기능의 종류가 많은 경우 유용한 Structural설계패턴 이다**  
+>
++ **데코레이터 패턴은 기본 기능에 추가될 수 있는 많은 수의 부가기능에 대해서 `기존의 코드를 변경하지 않으면서도(OCP 만족)` `다양한 조합을 동적으로 구현`할 수 있는 패턴이다**
+>
 
+<br><hr><br>
 
+## Decorator 패턴의 일반적인 설계구조
+
+<br>
+
+<div align="center">
+<img src="https://github.com/user-attachments/assets/31da9f3d-f278-45f5-ad7e-723be61b3b5c">
+</div>
+
+> 출처: Java객체지향 디자인패턴(한빛미디어)   
+> 위 그림에서는 Decorator와 Component 간에 합성관계로 모델링되었지만, 예제에서처럼 연관관계로 모델링해도 된다.  
+
+<br><br>
+
+> + **`Component (추상클래스)`: 기본 기능을 뜻하는 ConcreteComponent와 추가 기능을 뜻하는 Decorator를 포함하는 추상클래스(기본기능 객체와 장식자 객체 모두를 묶는 역할)**
+
+<br>
+
+> + **`ConcreteComponent 클래스`: 기본 기능을 구현하는 클래스(데코레이팅 할, 꾸며줄 대상인 기본 객체)**
+
+<br>
+
+> + **`Decorator (추상클래스)`: 부가 기능들을 일반화시킨 추상클래스**
+
+<br>
+
+> + **`ConcreteDecorator 클래스`: 기본 기능을 꾸며줄, 기본 기능에 추가되는 부가기능 클래스**
+
+<br>
+<br>
+<br><br>
