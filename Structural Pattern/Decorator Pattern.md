@@ -160,22 +160,245 @@ public class Main {
 우리의 목표는, 이처럼 기능이 추가될때마다 구현해야하는 클래스의 갯수가 기하급수적으로 늘어나는 설계가 아니고  **`추가되는 기능의 수와 그에따라 추가되는 클래스의 수가 선형적으로 비례하는 설계`** 이다.  
 
 지금 설계구조를보면, RoadDisplay라는 기본 도로 표시 기능의 클래스를 모든 표시기능의 클래스들이 상속받는 일반화관계 구조를 보이고 있다.  
-이는 단순히 super.draw()로 RoadDisplay의 기본 도로 표시 기능을 재사용하기위한 상속일 뿐이다.  
-**단순 기능 재사용을 위한 일반화관계는 상속의 잘못된 사용이다.**
 
+이는 단순히 super.draw()로 RoadDisplay의 기본 도로 표시 기능을 서브클래스에서 재사용하기위한 상속일 뿐이다.  
+**단순 기능 재사용을 위한 일반화관계는 상속의 잘못된 사용이다. 이는 `SOLID의 LSP원칙에 위반되기때문이다`**  
 
-### <div align="center">이 OCP 위반문제를 해결해보자.</div>
+>  LSP(Liskov Substitution Principle): 부모 클래스의 인스턴스를 자식 클래스의 인스턴스로 대체해도 프로그램의 동작이 바뀌지 않아야 한다는 원칙  
+
+상속 관계를 사용하는 것이 기능 재사용의 일반적인 방법처럼 보이지만, 상속은 IS-A 관계를 모델링할 때만 사용해야 한다.  
+즉, 자식 클래스가 부모 클래스의 "일종"이라는 관계가 성립할 때만 상속을 사용하는 것이 적절하다.  
+
+단순 기능 재사용을하려면 상속관계가 아닌 **연관관계**를 사용해야함을 명심하자.
+
+<br>
+
+### <div align="center">일반화관계(상속관계) 대신에 연관관계로 기본 도로 표시 기능을 재사용하도록 설계를 개선해보자.</div>
 
 <br><br><br>
 
-## 설계 개선(by Strategy 패턴 응용)
+## 설계 개선
 
-ScoreRecord 클래스를 변경하지않고 성적 출력방식을 변경 및 추가하도록해보자.
+도로 표시 기능에 차선 표시 기능을하는 RaodDisplayWithLane 클래스와 도로 표시 기능의 RoadDisplay 클래스가 있다면, RaodDisplayWithLane클래스는 RoadDisplay클래스의 도로 표시 기능 draw() 메서드를 재사용하고 싶을 것이다.  
+
+이때 **상속관계가 아닌 연관관계로** RoadDisplay클래스의 도로 표시 기능 draw() 메서드를 재사용해보자는 것이다.   
+
+
+![image](https://github.com/user-attachments/assets/7438cfdd-ab66-4cb7-894b-ed6c4cd6eb03)
+
+```java
+public class RoadDisplayWithTraffic{
+    private RoadDisplayWithLane roadDisplayWithLane;
+
+    public RoadDisplayWithTraffic(RoadDisplayWithLane roadDisplayWithLane){
+        this.roadDisplayWithLane=roadDisplayWithLane;
+    }
+
+    public void draw(){
+        roadDisplayWithLane.draw(); // 슈퍼클래스의 draw() => 기본 도로 표시.
+        drawTraffic(); // 교통량 표시.
+    }
+
+    public void drawTraffic() {
+        System.out.println("Traffic Display");
+    }
+}
+```
 
 <br>
 
-새로운 출력형식이 추가되어도 기존의 ScoreRecord 클래스는 변경되지않도록하는 설계.
+위처럼 연관관계를 이용하여 RoadDisplayWithTraffic 클래스가 RoadDisplayWithLane 클래스와 연관관계를 맺도록하면, 새로운 클래스를 만드는게 아니라 기존 클래스를 조합하여 기본 도로+차선+교통량 표시 기능을 구현할 수 있다.  
+
+하지만 문제가 하나있다.  
+만약 기본 도로+차선+교통량 표시 기능 전부가아니라 -> 기본 도로 표시에 + 교통량 표시만 하고 싶은 경우라면 **RoadDisplayWithTraffic 클래스가 roadDisplayWithLane 클래스가 아닌 RoadDisplay 클래스와 연관관계를 맺도록 코드를 변경**해줘야 할 것인데, **이러면 기존 코드가 변경되어야하기에 OCP 원칙에 어긋하게 된다.**  
+
+> **if) 연관관계 변경시**
+> 
+> ```java
+> public class RoadDisplayWithTraffic{
+>   private RoadDisplay roadDisplay; // 연관관계 변경) RoadDisplayWithLane -> RoadDisplay
+>
+> public RoadDisplayWithTraffic(RoadDisplay roadDisplay){
+>      this.roadDisplay=roadDisplay;
+>   }
+>
+> public void draw(){
+>     roadDisplay.draw(); 
+>      drawTraffic(); // 교통량 표시.
+>   }
+>
+>   public void drawTraffic() {
+>        System.out.println("Traffic Display");
+>   }
+>}
+>
+>
+> ```
 
 <br>
+
+위의 예시처럼, 기존의 클래스를 조합해서 재사용하기에 클래스를 만들지 않아도된다는 장점이 있지만, **기능을 변경하기위해 연관관계를 변경하면 OCP원칙을 위반하게된다.**  
+
+그럼 어떻게 **연관관계를 통한 재사용성**과 **OCP 원칙 성립**을 유지하면서 네비게이션 SW를 설계해볼 수 있을까?  
+
+<br>
+
+**`이 기능들을 대표하는 하나의 포괄 개념을 만들어보자.`**  
+
+<br>
+
+![image](https://github.com/user-attachments/assets/7df047c1-4955-49be-9900-781518bf6c6b)
+
+
+
+표시 기능에 대한 포괄 개념을 Display추상 클래스로 모델링하면, 표시 기능들이 추가되어도 Display의 하위 구체 클래스로 모델링해주면 된다.  
+
+그런데, 지금 다이어그램을 보면 Display 추상클래스가 자기 자신과 연관관계를 맺는 것이 보인다. **이는 필드로 자기참조 인스턴스를 갖고있음을 말한다.**    
+
+> 자기 참조: 클래스 내부에 자기 자신의 타입을 갖는 멤버 변수를 선언하는 것을 의미
+
+<br>
+
+Display는 모든 표시 기능들을 포괄하는 개념이기에 Display가 자기자신 Display와 연관관계를 맺는다는 것은,  
+Display를 상속받은 구체 클래스들이 다른 모든 구체 클래스들과 연관관계를 맺을 수 있다는 것이다.  
+
+<br>
+
+> 다만, 기본 도로 표시 기능의 RoadDisplay클래스는 기본 기능을 제공하는 클래스이기에 추가 기능으로 취급하면 안된다.
+> so, 추가기능들을 포괄하는 Display의 하위개념으로 둘 수 없어 따로 둔다.
+> 
+> RoadDispalyWithTraffic, RoadDispalyWithLane 등등의 기능 클래스들은 **다른 추가 기능들 + RoadDisplay의 기본 기능과 연관관계**를 맺으며 기능을 구현하는 반면, **RoadDisplay클래스는 기본 기능을 제공하는 클래스이기에 다른 기능 클래스들과 연관관계를 맺지않는다.**   
+
+<br>
+
+그럼, 이 따로 떨어진 RoadDisplay 클래스와 Display 추상클래스를 연관짓기위해 Display라는 포괄클래스를 하나 모델링 해주자. 기존 Display 추상클래스의 이름을 DisplayDecorator 로 이름을 변경하고, 새로운 포괄클래스의 이름을 Display로 하자.  
+
+그럼 이 **Display 추상클래스는 기본 기능과(RoadDisplay) + 다른 추가 기능들(DisplayDecorator 타입)을 모두 포괄하는 개념이다.**  
+
+
+<br>
+
+이제 이 기본 기능+추가 기능 전체를 포괄하는 개념인 Display를 적용시킨 설계는 다음과같다.  
+
+<br>
+
+![image](https://github.com/user-attachments/assets/d55c1ad1-56fb-450f-9e47-139be9389596)
+
+<br>
+
+추가 기능들은 자기들 간의 연관관계를 맺으면서도 기본 기능과도 연관관계를 맺을 수 있게되었다.  
+
+또한, RoadDisplay 기본 기능 클래스는 다른 누구와도 연관관계를 맺지 않도록되었다.  
+
+
+```java
+public abstract class Display {
+
+    public abstract void draw();
+}
+```
+```java
+public class RoadDisplay extends Display {
+
+    public void draw() {
+        System.out.println("Basic Road Display");
+    }
+}
+```
+```java
+public abstract class DisplayDecorator extends Display{
+    private Display display;
+
+    public DisplayDecorator(Display display) {
+        this.display = display;
+    }
+
+    public void draw(){
+        display.draw();
+    }
+}
+```
+```java
+public class roadDisplayWithLane extends DisplayDecorator {
+
+    public roadDisplayWithLane(Display display){
+        super(display);
+    }
+
+    public void draw(){
+        super.draw();
+        drawLane(); //추가적으로 차선 표시.
+    }
+
+    private void drawLane(){
+        System.out.println("Lane Display");
+    }
+}
+```
+```java
+public class roadDisplayWithLaneTraffic extends DisplayDecorator {
+
+    public roadDisplayWithLaneTraffic(Display display){
+       super(display);
+    }
+
+    public void draw(){
+        super.draw();
+        drawTraffic(); // 교통량 표시.
+    }
+
+    public void drawTraffic() {
+        System.out.println("Traffic Display");
+    }
+}
+```
+```java
+public class roadDisplayWithLaneTrafficCrossing extends DisplayDecorator{
+
+    public roadDisplayWithLaneTrafficCrossing(Display display) {
+        super(display);
+    }
+    public void draw(){
+        super.draw(); //기본 도로 표시 or 다른 추가적인 표시
+        drawCrossing();
+    }
+
+    public void drawCrossing(){
+        System.out.println("Crossing Display");
+    }
+}
+```
+```java
+public class Main {
+    public static void main(String[] args) {
+        RoadDisplay road = new RoadDisplay();
+        road.draw(); //기본적인 도로가 표시됨
+
+        Display roadWithLane = new RoadDisplayWithLane(road);
+        roadWithLane.draw(); //기본 도로 + 차선까지 표시됨
+
+        Display roadWithLaneTraffic = new RoadDisplayWithTraffic(roadWithLane);
+        roadWithLaneTraffic.draw(); //기본 도로 + 차선 + 교통량 표시됨
+
+        Display roadWithLaneTrafficCrossing = new RoadDisplayWithCrossing(roadWithLaneTraffic);
+        roadWithLaneTrafficCrossing.draw(); //기본 도로 + 차선 + 교통량 + 교차로 표시됨
+    }
+}
+
+```
+
+<br>
+
+위와 같은 설계로, 추가된 새로운 기능을 제공하기위해서 조합 경우의수의 증가로 클래스의 갯수가 기하급수적으로 늘어나는 단점이 해결되었다.  
+
+**클래스의 갯수가 기능의 갯수와 선형적으로 증가하는 이상적인 형태가 된것이다.**
+
+
+
+
+
+
+<br>
+
 
 
