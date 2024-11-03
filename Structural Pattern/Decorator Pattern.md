@@ -410,7 +410,7 @@ new RoadDisplayWithCrossing(new RoadDisplayWithTraffic(new RoadDisplayWithLane(r
 <br><br>
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/d83098ff-61a3-493f-9b79-271cc11dead8">
+<img src="https://github.com/user-attachments/assets/9f2086c8-5fbf-4e44-a9c3-4684a07a4886">
 </div>
 
 > 출처: Java객체지향 디자인패턴(한빛미디어)
@@ -434,7 +434,7 @@ new RoadDisplayWithCrossing(new RoadDisplayWithTraffic(new RoadDisplayWithLane(r
 <br>
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/31da9f3d-f278-45f5-ad7e-723be61b3b5c">
+<img src="https://github.com/user-attachments/assets/ad420e48-9f1d-49d8-b983-0d67c1fb1ded">
 </div>
 
 > 출처: Java객체지향 디자인패턴(한빛미디어)   
