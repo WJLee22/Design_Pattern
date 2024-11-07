@@ -29,6 +29,7 @@
   + <a href="Behavioral pattern/Strategy.md">Strategy</a>
   + <a href="Behavioral pattern/Command.md">Command</a>
   + <a href="Behavioral pattern/Observer.md">Observer</a>
+  + <a href="Behavioral pattern/Template Method.md">Template Method</a>
 <br>
 
 + ### etc
