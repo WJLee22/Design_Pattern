@@ -21,7 +21,7 @@
 
   <br>
   
-  > ex) new InputStreamReader(inputStream, "UTF-8");  
+  > ex) new InputStreamReader(socket.getInpitStream(), "UTF-8");  
   > 바이트 스트림(InputStream)을 문자 스트림(InputStreamReader)으로 연결하는 경우도 데코레이터 패턴의 예시 중의 하나
   > 
   > InputStreamReader는 InputStream을 감싸서 바이트 스트림을 문자 스트림으로 변환하는 데코레이터 역할. 즉, InputStream 객체에 문자 스트림 기능을 추가하는 것
