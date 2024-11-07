@@ -28,59 +28,133 @@
 
 ## `<초기설계>`
 
-<div align="center"><img src="https://github.com/user-attachments/assets/3e633839-9563-4fdd-bb8d-9787bb1a3b86"></div>
+<div align="center"><img src="https://github.com/user-attachments/assets/b2175945-7fd0-4949-94ab-9cb785cede92"></div>
+
+<br>
+
+<div align="center"><img src="https://github.com/user-attachments/assets/7cdf0f42-172e-45fd-9815-63a036f565bb"></div>
+
+> 출처: Java객체지향 디자인패턴(한빛미디어)
+
+<br>
 
 - **`HyundaiMotor 클래스`: 엘리베이터를 구동시키는데 필요한 HyundaiMotor사의 모터를 나타낸 클래스** (direction값에 따라 모터를 움직여 엘리베이터를 구동시키는 기능인 move()&moveHyundaiMotor() 메서드)
   > move()는 외부에서 호출되는 메서드,  move()를 통해서 -> **실제 모터를 구동시키는건 moveHyundaiMotor() 메서드**
   
-  > 단, 모터를 구동시키기전에 getMotorStatus()메서드로 현재 모터의 상태를 확인해보고 -> 현재 모터의 상태가 moving이라면 break;
+  > 단, 모터를 구동시키기전에 getMotorStatus()메서드로 현재 모터의 상태를 확인해보고 -> 현재 모터의 상태가 MOVING이라면 구동시킬 필요가 없으니 로직에서 break;
   >   
-  > 현재 모터가 구동중이 아니라면 구동시킴 -> 현재 모터 상태를 setMotorStatus(Moving)로 변경. 
+  > **현재 모터가 STOPPED 상태라면**, 즉 구동중이 아니라면 **엘베 문이 열려있는지 파악후** -> **구동시킴**(현재 모터 상태를 setMotorStatus(Moving)로 변경) 
+
+<br>
 
 - **`Door 클래스`: 엘리베이터 문 클래스** (엘리베이터 문이 열린채로 구동시키면 위험하니, 모터 클래스는, 현재 엘리베이터 문의 상태 파악을 위해 이 클래스와 연관관계)
   > 문을 열고 닫을 수 있도록하는 open(), close() 메서드와 현재 문의 OPENED 상태인지 CLOSED 상태인지를 알려주는 getDoorStatus()메서드 제공.
   >   
   > 즉, 모터 클래스는, Door클래스의 getDoorStatus()메서드로 현재 문의 상태를 확인하고-> 현재 문이 열려있으면 문을 close하고 구동 - 닫혀있으면 그냥 구동
+
+  <br>
   
 - **`Direction enumeration`: 모터를 어느 방향으로 움직일 것인지 그 방향을 나타내는 enumeration타입의 Direction** (UP, DOWN)
 - **`MotorStatus enumeration`: 모터가 구동중인지 멈춰있는지 상태를 나타내는 enumeration타입의 MotorStatus** (MOVING, STOPPED)
 - **`DoorStatus enumeration`: 엘리베이터 문이 열러있는지 닫혀있는지 상태를 나타내는 enumeration타입의 DoorStatus** (OPENED, CLOSED)
-<br>
+
+  <br>
+  
+  ✔
+  > **public `enum` Direction{UP, DOWN}** => UP, DOWN은 Direction 클래스 타입의 객체를 가리키는, 메서드 영역에 할당된 레퍼런스 변수이다.
+  > 
+  > 즉, enum 상수(UP,DOWN)는 힙에 저장된 실제 객체(UP,DOWN)를 가리키는 final static 타입의 레퍼런스 변수인 것. 실제 저 enum 상수들은 힙 영역에 Direction타입 인스턴스로 존재한다.
+  
+  
+<br><br>
 
 ```java
-public class RoadDisplay {
+public enum Direction {
+    UP, DOWN
+}
 
-    public void draw() {
-        System.out.println("Basic Road Display");
-    }
+public enum DoorStatus {
+    OPENED, CLOSED
+}
+
+public enum MotorStatus {
+    MOVING, STOPPED
 }
 ```
 ```java
-public class RoadDisplayWithLane extends RoadDisplay{
-    public void draw(){
-        super.draw(); //기본 도로 그리기.
-        drawLane(); //추가적으로 차선을 그리기.
+import java.security.PrivateKey;
+
+public class HyundaiMotor {
+    private Door door; //Door 클래스와 연관관계.
+    private MotorStatus motorStatus;
+
+
+    public HyundaiMotor(Door door) {
+        this.door = door;
     }
 
-    private void drawLane(){
-        System.out.println("Lane Display");
+    private MotorStatus getMotorStatus() {
+        return motorStatus;
+    }
+
+    private void setMotorStatus(MotorStatus motorStatus) {
+        this.motorStatus = motorStatus;
+    }
+
+    //모터를 실제로 움직이기 전에 움직일 수 있는 상태인지를 먼저 확인하고 실제 모터를 구동시키고자하는 move() 로직.
+    public void move(Direction direction) {
+        MotorStatus morMotorStatus = getMotorStatus();
+        //일단 현재 모터가 움직이는 중이면 움직일 필요가 없으니 return으로 move로직 종료.
+        if (morMotorStatus == MotorStatus.MOVING) return;  //MOVING 인스턴스는 1개만 존재함. 주소값(레퍼런스)으로 참조 가능.
+
+        DoorStatus doorStatus = door.getDoorStatus();
+        //2차로, 현재 문이 열려있으면 모터 구동이 불가능하니, 문을 닫고나서 모터를 움직일 수 있도록.
+        if (doorStatus == DoorStatus.OPENED) door.close();
+
+        //이제, 1.모터는 멈춰있는 상태 + 2.문은 닫혀있는 안전한 상태 임을 모두 확인했으니 모터를 주어진 Direction으로 구동가능.
+        moveHyundaiMotor(); //모터를 구동시키자.
+        setMotorStatus(MotorStatus.MOVING);//모터를 구동시켰으니. 모터의 상태를 작동중으로 변경.
+    }
+
+        //실제로 현대모터를 구동시키는 메서드(로직).
+        private void moveHyundaiMotor(){
+            System.out.println("Hyundai Motor Initiated");
+        }
+    }
+```
+```java
+public class Door {
+    private DoorStatus doorStatus;
+
+    public Door() {
+        doorStatus = DoorStatus.CLOSED; //doorStatus 필드에는 DoorStatus 클래스에 정의되어 있는 static final 타입의 OPENED 레퍼런스 변수의 값이 할당됨.
+        //OPENED 레퍼런스 변수의 값은 => 힙 영역에 할당되어있는 DoorStatus 타입의 객체인 OPENED의 주소(레퍼런스).
+    }
+
+    public void open() {
+        doorStatus = DoorStatus.OPENED;
+    }
+
+    public void close() {
+        doorStatus = DoorStatus.CLOSED;
+    }
+
+    public DoorStatus getDoorStatus() {
+        return doorStatus;
     }
 }
-
 ```
 ```java
 public class Main {
-    public static void main(String[] args) {
-        RoadDisplay road = new RoadDisplay();
-        road.draw(); //기본적인 도로가 표시됨
-
-        RoadDisplayWithLane roadWithLane = new RoadDisplayWithLane();
-        roadWithLane.draw(); //기본 도로 + 차선까지 표시됨
+    public static void main(String[] args){
+        Door door = new Door();
+        HyundaiMotor hyundaiMotor = new HyundaiMotor(door);
+        hyundaiMotor.move(Direction.UP);
     }
 }
-
 ```
-**도로 표시를 위한 기존 코드 설계는 위와 같다.**    
+
+**기존 코드 설계는 위와 같다.**    
 **하지만 위와 같은 설계는 문제점이 있다** 
 
 <br><br><hr><br>
@@ -89,62 +163,119 @@ public class Main {
 
 <br>
 
-+ **만약 추가적인 도로 표시 기능을 구현하고 싶다면 어떻게 해야 하는가?  
-  예를 들어 기본 도로 표시에 + 교통량을 표시하고 싶다면?**
++ **현재 설계는 HyundaiMotor 클래스가 현대모터를 구동시키고있다.**
++ **그런데, 만약 현대가 아닌 다른 회사의 모터를 제어해야하는 경우에는 어떻게 해야 하는가?**
+  > **예를 들어 LG모터를 구동시키고 싶다면?**
   
-`=> 이 경우, RoadDisplayWithLane 클래스와 마찬가지로 RoadDisplayWithTraffic 이라는 새로운 클래스를 만들어야 한다.`
+`=> 이 경우, HyundaiMotor 클래스와 기능이 동일한 LGMotor 클래스를 만들어내면 될 것이다.`  
+
+**하지만 생성자 이름이나 일부 메서드의 이름만 다르고 나머지 부분들은 아예 동일하기때문에,    
+아래와 같이 중복되는 맴버들을 슈퍼클래스로 모델링하여 일반화 관계(상속관계)로 설계하면 수월할 것이다.** 
 
 
-![image](https://github.com/user-attachments/assets/a3ebfa1e-953b-4f28-82c7-64b761ad1427)
+<div align="center"><img src="https://github.com/user-attachments/assets/2e790691-32ba-48fe-bcbe-91417e9efdd7"></div>
 
 ```java
-public class RoadDisplayWithTraffic extends RoadDisplay{
+public abstract class Motor {
+    protected Door door;
+    private MotorStatus motorStatus;
 
-    public void draw(){
-        super.draw(); // 슈퍼클래스의 draw() => 기본 도로 표시.
-        drawTraffic(); // 교통량 표시.
+    public Motor(Door door){
+        this.door= door;
     }
 
-    public void drawTraffic() {
-        System.out.println("Traffic Display");
-    }
+    protected MotorStatus getMotorStatus() {return motorStatus;}
+    protected void setMotorStatus(MotorStatus motorStatus) {this.motorStatus = motorStatus;}
+
+    public abstract void move(Direction direction);
 }
+
 ```
 ```java
-public class Main {
-    public static void main(String[] args) {
-        RoadDisplayWithTraffic roadWithTraffic = new RoadDisplayWithTraffic();
-        roadWithTraffic.draw(); //기본 도로 + 교통량 표시됨
+public class LGMotor extends Motor{
+
+    public LGMotor(Door door) {
+        super(door);
     }
-}
+
+    public void move(Direction direction) {
+        MotorStatus morMotorStatus = getMotorStatus();
+        if (morMotorStatus == MotorStatus.MOVING) return;
+
+        DoorStatus doorStatus = door.getDoorStatus();
+        if (doorStatus == DoorStatus.OPENED) door.close();
+        
+        moveLGMotor(); //모터 구동
+        setMotorStatus(MotorStatus.MOVING);
+    }
+        //실제로 현대모터를 구동시키는 메서드(로직).
+        private void moveLGMotor(){
+            System.out.println("LG Motor Initiated");
+        }
+    }
 ```
+```java
+public class HyundaiMotor extends Motor{
+
+    public HyundaiMotor(Door door) {
+        super(door);
+    }
+
+    public void move(Direction direction) {
+        MotorStatus morMotorStatus = getMotorStatus();
+        if (morMotorStatus == MotorStatus.MOVING) return;
+
+        DoorStatus doorStatus = door.getDoorStatus();
+        if (doorStatus == DoorStatus.OPENED) door.close();
+
+        moveHyundaiMotor(); //모터를 구동시키자.
+        setMotorStatus(MotorStatus.MOVING);
+    }
+
+        //실제로 현대모터를 구동시키는 메서드(로직).
+        private void moveHyundaiMotor(){
+            System.out.println("Hyundai Motor Initiated");
+        }
+    }
+```
+<br>
+
+위와 같이 추상클래스에, 각 회사의 모터 클래스마다 공통적인 부분들(set,getMotorStatus & Door+MotorStatus필드)은 모두 정의해놓았고  
+
+각 회사의 모터마다 구현이 다른 메서드는(예를들어, 각 회사마다 모터의 움직임이 다르니 move()의 로직은 각기 다르다) 정의는 없고 선언만해놓은 형태인 **추상메서드**로 선언해두었다.  
 
 <br>
 
-위와 같이 추가적인 도로 표시 기능을 구현하고자할때 기본 도로 표시 클래스를 상속받는 추가적인 클래스를 만들어 일반화관계를 만들기에 기존 코드의 변경이없어서 크게 문제가 되지않는 것처럼 보일 수 있다.  
-
-하지만 아래 요구사항을 생각해보면 문제점이 보일 것이다.  
+이로써 다른회사의 모터도 문제없이 작동할 수 있게된 것 같으나, 문제점이 있다.  
 
 <br>
 
-+ **여러가지 추가 기능들을 `조합`하여 제공하고 싶다면 어떻게 해야 하는가?  
-  예를 들어 기본 도로 표시에 차선 표시 기능과 교통량 표시 기능을 함께 제공하고 싶다면?**
-
-=> 지금은 기본 도로 표시+차선 표시, 기본 도로 표시+교통량 표시... 처럼, 별도의 클래스를 만들고 그 안에 추가적인 표시 메서드를 구현하여 기본 도로 표시 메서드 호출 + 각각의 메서드를 호출하는 방식이었다.  
-
-하지만 이와다르게 **`여러가지 추가 기능들을 하나로 조합하여,` 기본 도로만을 표시했을때=> 기본도로 + 차선 표시 + 교통량 표시 등등 여러가지 기능들을 조합하여 한번에 표시되도록 하고싶다면** 어떻게해야하는지를 묻는 것이다.    
+**HyundaiMotor와 LGMotor 클래스의 move() 메서드**를 보면, **`메서드의 작업 흐름이 거의 동일하나,`**  
+### 각 회사마다 모터이름이 다르기에, **실제 모터를 구동시키는 기능을하는 `move"회사"Motor()`메서드** 호출부분에서  저 "회사" 안에 들어갈 이름이 각 회사마다 다를 것이다.  
 
 <br>
 
-만약 기존처럼 추가적인 클래스를 만들어나가는 방식이었다면   
+#### 즉, 전체적인 move() 알고리즘의 step은 동일하나, ```일부step(ex: move"회사"Motor() 메서드)```만 다른경우가 존재한다는 것이다.  
 
-![image](https://github.com/user-attachments/assets/93f5bd41-fc85-466a-8300-c02df4c6a775)
+<br>
 
-위처럼 차선,교통량을 표시해주는 메서드인 drawLaneTraffic()을 갖는 RoadDisplayWithLaneTraffic 클래스를 추가적으로 만들어야할 것이다.  
+### "일부분만 빼고 나머지는 동일하다" -> 전체적인 흐름은 그대로두고, 그 일부분만 어떻게 처리하면 더 좋은 코드가 될텐데... 
 
-=> 이는, 현재 존재하는 차선 표시 클래스와 교통량 표시 클래스가 존재함에도 이 둘을 활용하지 않고 새로운 클래스를 만들었기에 코드의 낭비라고 볼 수 있다.  
+<br>
 
-아래의 표와 클래스 다이어그램을 보자.  
+### 이렇듯 `메서드의 동일한 흐름속에서`, `일부 step 들이 다른 경우에`, 전체적인 흐름은 동일하게 유지하되, 이 각 클래스의 특정 메서드는 각각 다르게 작동하도록 처리해주는것이 바로 Template Method 패턴의 중점이자 역할이다.  
+
+<br><hr><br>
+   
+## + HyundaiMotor와 LGMotor클래스의 move 메서드 문제점 개선 by `Template Method 패턴`
+
+<br>
+
+<div align="center"><img src="https://github.com/user-attachments/assets/61ff8e81-8168-4e01-b464-ee23abd2aa6f"></div>
+
+> 출처: Java객체지향 디자인패턴(한빛미디어)
+
+위의 그림에서   
 기본 도로 표시 기능에 + 추가기능인 차선 표시 - 교통량 표시 - 교차로 표시 기능들을 조합해야 하는 경우, 추가기능 조합의 가능한 경우의 수만큼 클래스를 생성해줘야한다. 만약 **여기에 추가적인 표시기능들이 추가된다면 더 많은 조합들이 생김으로써 클래스의 갯수가 기하급수적으로 증가될 것이다.**(조합의 갯수는 n(기능의 수)!+1+1개)
 
 <br>
