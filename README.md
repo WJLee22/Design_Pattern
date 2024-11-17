@@ -13,7 +13,7 @@
   
   + <a href="Creational Pattern/Singleton.md">SingleTon</a>
   + <a href="Creational Pattern/Builder.md">Builder</a>
-  + <a href="Factory Method Pattern/Factory Method.md">Factory Method</a>
+  + <a href="Creational Pattern/Factory Method.md">Factory Method</a>
 
 <br>
 
