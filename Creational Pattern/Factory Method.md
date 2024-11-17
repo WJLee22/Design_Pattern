@@ -415,7 +415,7 @@ so, **객체를 생성하는 로직(FactoryMethod)이 다른 클래스에 있기
 ### 허나, 이 Factory Method 패턴과 GoF Factory Method 패턴은 다르다.  
 #### GoF Factory Method 패턴은 다음 장에서 알아보자.  
 
-<a href="https://github.com/WJLee22/Design_Pattern/blob/main/Creational%20Pattern/GoF%20Factory%20Method.md/" target="_blank">GoF Factory Method 패턴</a>
+[GoF Factory Method 패턴](https://github.com/WJLee22/Design_Pattern/blob/main/Creational%20Pattern/GoF%20Factory%20Method.md)
 
 
 <br><br>
