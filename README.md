@@ -26,7 +26,7 @@
 <br>
 
 + ### Behavioral Patttern
-  > 반복적으로 사용되는 객체들의 상호작용을 패턴화한 것으로 클래스나 객체들이 상호작용하는 방법과 책임을 분산하는 방법을 제공하는 패턴
+  > **반복적으로 사용되는 객체들의 상호작용을 패턴화한 것**으로 클래스나 객체들이 상호작용하는 방법과 책임을 분산하는 방법을 제공하는 패턴
 
   + <a href="Behavioral pattern/Strategy.md">Strategy</a>
   + <a href="Behavioral pattern/Command.md">Command</a>
