@@ -19,7 +19,7 @@
 
 <br>
 
-## 사과를 디저트로 제공하는 식당클래스 예제를 통해 알아보는 Decorator Pattern      
+## 사과를 디저트로 제공하는 식당클래스 예제를 통해 알아보는 Factory Method Pattern      
 
 <br>
 
