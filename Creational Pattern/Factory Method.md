@@ -406,116 +406,15 @@ public class Main {
 
 <br>
 
-so, 객체를 생성하는 로직(FactoryMethod)이 다른 클래스에 있기때문에,  
-우리가 원하는 인스턴스가 변한다 할지라도 - 직접적으로 영향을 받지 않게된다.  
+so, **객체를 생성하는 로직(FactoryMethod)이 다른 클래스에 있기때문에,**   
+**우리가 원하는 인스턴스가 변한다 할지라도 - 직접적으로 영향을 받지 않게된다.**  
 > ex) 사과종류가 추가될 때마다, 이 처리를 위해 사과객체를 필요로하는 곳마다 if()문을 추가해줘야했음.  
 
 <br><br>
 
+### 허나, 이 Factory Method 패턴과 GoF Factory Method 패턴은 다르다.  
+#### GoF Factory Method 패턴은 다음 장에서 알아보자.  
 
-<div align="center">
-<img src="https://github.com/user-attachments/assets/d86a8461-d2df-4f2b-bf83-38f32ea51d32">
-</div>
+[GoF Factory Method 패턴](https://github.com/WJLee22/Design_Pattern/blob/main/Creational%20Pattern/GoF%20Factory%20Method.md)
 
-> 출처: Java객체지향 디자인패턴(한빛미디어) 
-
-<br><br>
-
-+ 각 모터클래스마다 정의되어있던 move() 메서드에서 **공통적인 부분**을 **상위 클래스의 일반메서드**로 이동시켰다. => **`Motor클래스의 move()`**
-+ move() 메서드에서 공통적인 부분을 제외한 나머지 **상이한 step부분들**은(여기선 move"회사"Motor메서드) **상위클래스의 추상메서드**로 이동시켰다. => **`Motor클래스의 moveMotor()`** 
-> 자식클래스(각 회사마다의 모터클래스)에서 재정의하도록 추상메서드로 정의.  
-> 접근제한자 **"#"** => protected : 자식클래스에서만 재정의 할 수 있도록 protected로 접근제한자 설정.
-
-<br>
-
-🛑🛑
-> "부모 클래스의 객체를 자식 클래스의 객체로 대체해도 프로그램의 동작이 변경되지 않아야 한다"는 `리스코프 치환 원칙(LSP)`을 준수하기위해,
->   
-> **오버라이딩된 메서드의 접근 지정자는 부모의 해당 추상메서드보다 더 좁은 범위를 가질 수 없다.**
-> 
-> 부모 메서드의 접근 지정자가 `protected`라면, 오버라이딩하는 자식 메서드의 접근 지정자는 `protected 또는 public`이어야한다.
->  
-> 즉, 오버라이딩 할 때 부모 메서드의 접근 지정자보다 더 좁은 범위의 접근 지정자를 사용할 수 없다. 이는 **LSP원칙을 준수하고 프로그램의 안정성을 유지하기 위해서**이다.
-
-<br><br><br>
-
-<div align="center">
-<img src="https://github.com/user-attachments/assets/7605e17a-eb01-40e7-8a64-64735a6e7857">
-</div>
-
-> 출처: Java객체지향 디자인패턴(한빛미디어) 
-
-<br>
-
-+ ### 이 예제에서 여러 클래스에서 *`공통으로 사용하는 메서드`* 이자 *`변하지 않는 고정기능`* 인 move()를 **`템플릿 메서드`** 라고 부른다.
-  
-+ ### 이 예제에서 여러 클래스에서 공통적인 부분들 외에 *`각 클래스마다 구현이 상이한 부분-달라지는 부분`* 인 moveMotor()를 `Primitive Method` 또는 `Hook Method` 라고 부른다.(`추상메서드임`)
-
-<br><br>
-
-## 마무리
-
-<br>
-
->
-+ **데코레이터 패턴은 기본 기능에 추가할 수 있는 기능의 종류가 많은 경우 유용한 Structural설계패턴 이다**  
->
-+ **데코레이터 패턴은 기본 기능에 추가될 수 있는 많은 수의 부가기능에 대해서 `기존의 코드를 변경하지 않으면서도(OCP 만족)` `다양한 조합을 동적으로 구현`할 수 있는 패턴이다**
->
-
-<br><hr><br>
-
-## Template Method 패턴의 일반적인 설계구조
-
-<br>
-
-<div align="center">
-<img src="https://github.com/user-attachments/assets/c099e58a-632d-481d-a259-7467daefa24b">
-</div>
-
-> 출처: Java객체지향 디자인패턴(한빛미디어)
-
-<br><br>
-
-> 
-> AbstractClass 즉, 상위클래스는 추상클래스로 구현되어있음. 이 AbstractClass 내부에는,  
-> 공통으로 사용하는 메서드 즉, **템플릿 메서드**가 정의되어있고,   
-> 템플릿 메서드에서 상이한 부분인-자식클래스가 재정의해야하는 **추상메서드**인 **Primitive or Hook 메서드**도 정의되어있다.  
->
-> 
-> **하위 클래스에서는, 공통된 부분은 상속으로 받았으니, 이 달라지는 부분인 Primitive Operation만 오버라이딩하면 된다.**
->   
-
-<br><hr><br>
-
-<div align="center">
-<img src="https://github.com/user-attachments/assets/13ede9be-7f87-4b51-ad1b-cbaa8911ed1f">
-</div>
-
-> 출처: Java객체지향 디자인패턴(한빛미디어)
-
-<br>
-
-1. **외부 client에서 ConcreteClass의 template Method를 호출**
-   
-2. **ConcreteClass는 templateMethod 흐름에따라 실행을 하다가**
-   
-3. **중간에, 하위클래스마다 상이한-구현이 다른부분만 각 하위클래스마다 오버라이딩(재정의)해둔 primitive Method를 호출실행.**
-   
-<br><hr><br>
-
-<div align="center">
-<img src="https://github.com/user-attachments/assets/2fce0480-412d-4225-a37d-f4b321c79df8">
-</div>
-
-<br><hr><br>
-
-+ **전체적으로 동일하면서(`template Method`) 부분적으로 상이한 문장-step(`Primitive - Hook Method`)을 가지는 메서드의 코드 중복을 최소화 할때 유용한 행위 패턴**  
-
-+ **`Template Method패턴`은, 전체적인 알고리즘은 동일하여 상위클래스에다가 구현해두고, 상이한 부분은 하위 클래스에서 구현할 수 있도록 해주는 디자인 패턴**  
-  
-+ **전체적인 알고리즘의 코드를 재사용하는데 유용하다**    
-
-<br>
-<br>
 <br><br>
