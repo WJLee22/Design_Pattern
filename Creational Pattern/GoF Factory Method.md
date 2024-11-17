@@ -12,8 +12,11 @@
 
 <br>
 
-+ **`GoF`팩토리 메서드 패턴(GoF Factory Method Pattern)은 기본적으로 `Template Method 패턴을 차용`하는 패턴이다.**  
-+ **`공통로직은 상위에서 정의`하고, `객체 생성 로직은 하위에서 재정의`하도록하는 행위패턴**  
++ **`GoF`팩토리 메서드 패턴(GoF Factory Method Pattern)은 기본적으로 `Template Method 패턴을 차용`하는 패턴이다.**
+  
++ **`공통로직은 상위에서 정의`하고, `객체 생성 로직은 하위에서 재정의`하도록하는 행위패턴**
+  
++ **`객체 생성의 책임을 서브클래스로 위임하는 디자인 패턴`**
 
 > 즉, 각 클라이언트에서 직접 new 연산자를 통해 제품 객체를 생성하는 것이 아닌, 제품 객체 생성을 담당하는 공장 클래스에서 객체 생성을 도맡아서 한다.  
 
@@ -251,7 +254,16 @@ public class Main {
    
 + **이것이 바로 => `GoF Factory Method 패턴`**  
 
+<br><br><hr><br><br>
 
-<br><hr><br>
+### `<Factory Method 패턴과 Template Method 패턴의 차이점>`
+
+<br>
+
+#### Factory Method 패턴은 Template Method 패턴의 변형으로 볼 수 있다.  
+#### Factory Method 패턴은 `객체 생성에 중점`을 두고, Template Method 패턴은 `알고리즘의 구조를 정의하는 데 중점`을 둔다.
+
+
+<br><br><hr><br><br>
 
 <br><br>
