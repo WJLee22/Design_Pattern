@@ -210,7 +210,36 @@ public class Main {
 **사과 객체 생성의 경우엔 파리지점클래스에서 파리지점만의 사과객체생성 로직을 재정의**하면 된다.  
 > ex) 파리에서 구하기 쉬운 사과종 if문(그린애플, 퍼플애플, 샤인애플...)
 
+<br><br><br><hr><br>
+
+
+## GoF Factory Method 패턴의 일반적인 구조
+
+<br>
+
+<div align="center">
+<img src="https://github.com/user-attachments/assets/89838447-827b-48ef-9c1b-de447565f2e2">
+</div>
+
+> 출처: Java객체지향 디자인패턴(한빛미디어)
+
 <br><br>
+
+> + **`Creator (추상클래스)`: 전체적인 로직-흐름을 나타내는 Template Method가 정의되어있는 추상클래스**  
+>  **우리 예제에서는 `Restaurant 추상클래스`**  
+
+<br>
+
+> + **`ConcreteCreator 클래스`: 객체 생성 메서드인 Factory Method를 재정의하는 하위클래스**  
+> **우리 예제에서는 `Seoul & NYRestaurant 클래스`**  
+> 팩토리 메서드내에서 특정종류의 사과객체를 지역변수로 보유 -> **ConcreteProduct와 의존관계**  
+
+<br>
+
+> + **`Product (추상클래스)`: 팩토리 메서드로 생성되는 객체를 나타내는 추상클래스**
+> **우리 예제에서는 `Apple 추상클래스`**   
+
+<br><br><hr><br>
 
 ## 마무리
 
@@ -219,9 +248,7 @@ public class Main {
 >
 + **전체적인 흐름은 Template Method 패턴을 따르되, 객체를 생성하는 부분은 하위클래스에서 정의하도록.**  
 + **이것이 바로 => `GoF Factory Method 패턴`**  
->
-+ **데코레이터 패턴은 기본 기능에 추가될 수 있는 많은 수의 부가기능에 대해서 `기존의 코드를 변경하지 않으면서도(OCP 만족)` `다양한 조합을 동적으로 구현`할 수 있는 패턴이다**
->
+
 
 <br><hr><br>
 
