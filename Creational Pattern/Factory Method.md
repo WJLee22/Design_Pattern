@@ -28,134 +28,93 @@
 
 ## `<초기설계>`
 
-<div align="center"><img src="https://github.com/user-attachments/assets/b2175945-7fd0-4949-94ab-9cb785cede92"></div>
+<div align="center"><img src="https://github.com/user-attachments/assets/24c7d21c-bee2-4674-acce-7825f68e26d2"></div>
 
 <br>
 
-<div align="center"><img src="https://github.com/user-attachments/assets/7cdf0f42-172e-45fd-9815-63a036f565bb"></div>
-
-> 출처: Java객체지향 디자인패턴(한빛미디어)
 
 <br>
 
-- **`HyundaiMotor 클래스`: 엘리베이터를 구동시키는데 필요한 HyundaiMotor사의 모터를 나타낸 클래스** (direction값에 따라 모터를 움직여 엘리베이터를 구동시키는 기능인 move()&moveHyundaiMotor() 메서드)
-  > move()는 외부에서 호출되는 메서드,  move()를 통해서 -> **실제 모터를 구동시키는건 moveHyundaiMotor() 메서드**
-  
-  > 단, 모터를 구동시키기전에 getMotorStatus()메서드로 현재 모터의 상태를 확인해보고 -> 현재 모터의 상태가 MOVING이라면 구동시킬 필요가 없으니 로직에서 break;
-  >   
-  > **현재 모터가 STOPPED 상태라면**, 즉 구동중이 아니라면 **엘베 문이 열려있는지 파악후** -> **구동시킴**(현재 모터 상태를 setMotorStatus(Moving)로 변경) 
+사과는 부사사과와 홍옥사과 2종류. 
 
 <br>
 
-- **`Door 클래스`: 엘리베이터 문 클래스** (엘리베이터 문이 열린채로 구동시키면 위험하니, 모터 클래스는, 현재 엘리베이터 문의 상태 파악을 위해 이 클래스와 연관관계)
-  > 문을 열고 닫을 수 있도록하는 open(), close() 메서드와 현재 문의 OPENED 상태인지 CLOSED 상태인지를 알려주는 getDoorStatus()메서드 제공.
-  >   
-  > 즉, 모터 클래스는, Door클래스의 getDoorStatus()메서드로 현재 문의 상태를 확인하고-> 현재 문이 열려있으면 문을 close하고 구동 - 닫혀있으면 그냥 구동
+사과를 서빙해주는 메서드. 현재 사과는 부사사과. 사과를 씻고-껍질깎고-조각낸 다음 return. 손님에게 서빙.
 
-  <br>
-  
-- **`Direction enumeration`: 모터를 어느 방향으로 움직일 것인지 그 방향을 나타내는 enumeration타입의 Direction** (UP, DOWN)
-- **`MotorStatus enumeration`: 모터가 구동중인지 멈춰있는지 상태를 나타내는 enumeration타입의 MotorStatus** (MOVING, STOPPED)
-- **`DoorStatus enumeration`: 엘리베이터 문이 열러있는지 닫혀있는지 상태를 나타내는 enumeration타입의 DoorStatus** (OPENED, CLOSED)
 
-  <br>
+
+Apple 클래스는 추상 클래스로두고, 사과의 세부종류인 부사사과와 홍옥사과를 하위 클래스로 둔다. 
+
+<br>
+
+식당은 사과를 디저트로 제공해주기에 사과를 필요로한다고 가정하자.
+
+식당(레스토랑) 클래스에서는 준비해둔 사과를 -> 사과를 씻고-껍질깎고-조각낸 다음 손님에게 서빙해주는 일련의 과정을 따른다.
+
+<br>
+
+사과를 필요로하는 곳이 식당 뿐만은 아닐 것이다. 예를들어 일반 집에서는 아침에 사과를 먹는다.  
+
+다만, 식당과는 달리 집에서는 사과 껍질을깎고&조각내는 과정없이 그냥 씻은채로 아침에 먹는다.  
+
   
-  ✔
-  > **public `enum` Direction{UP, DOWN}** => UP, DOWN은 Direction 클래스 타입의 객체를 가리키는, 메서드 영역에 할당된 레퍼런스 변수이다.
-  > 
-  > 즉, enum 상수(UP,DOWN)는 힙에 저장된 실제 객체(UP,DOWN)를 가리키는 final static 타입의 레퍼런스 변수인 것. 실제 저 enum 상수들은 힙 영역에 Direction타입 인스턴스로 존재한다.
-  
-  
-<br><br>
+
+이러한 시나리오 구조에 대한 코드는 아래와 같다.  
+
+<br>
 
 ```java
-public enum Direction {
-    UP, DOWN
+public abstract class Apple {
+    public abstract void wash();
+    public abstract void peel();
+    public abstract void slice();
+}
+public class Busa extends Apple{
+    public void wash() {
+        System.out.println("Busa: wash");
+    }
+    public void peel() {
+        System.out.println("Busa: peel");
+    }
+    public void slice() {
+        System.out.println("Busa: slice");
+    }
+}
+public class Hongok extends Apple{
+    public void wash() {
+        System.out.println("Hongok: wash");
+    }
+    public void peel() {
+        System.out.println("Hongok: peel");
+    }
+    public void slice() {
+        System.out.println("Hongok: slice");
+    }
 }
 
-public enum DoorStatus {
-    OPENED, CLOSED
+
+public class Restaurant {
+    public Apple servingApple(){ //사과 서빙 메서드.
+        Apple apple = new Busa(); //부사 사과를 준비해두고
+        apple.wash(); //사과를 씻고
+        apple.peel(); //사과껍질을 깎고
+        apple.slice(); //사과를 자르고
+        return apple; //사과를 손님에게 제공한다.
+    }
 }
-
-public enum MotorStatus {
-    MOVING, STOPPED
-}
-```
-```java
-import java.security.PrivateKey;
-
-public class HyundaiMotor {
-    private Door door; //Door 클래스와 연관관계.
-    private MotorStatus motorStatus;
-
-
-    public HyundaiMotor(Door door) {
-        this.door = door;
-    }
-
-    private MotorStatus getMotorStatus() {
-        return motorStatus;
-    }
-
-    private void setMotorStatus(MotorStatus motorStatus) {
-        this.motorStatus = motorStatus;
-    }
-
-    //모터를 실제로 움직이기 전에 움직일 수 있는 상태인지를 먼저 확인하고 실제 모터를 구동시키고자하는 move() 로직.
-    public void move(Direction direction) {
-        MotorStatus morMotorStatus = getMotorStatus();
-        //일단 현재 모터가 움직이는 중이면 움직일 필요가 없으니 return으로 move로직 종료.
-        if (morMotorStatus == MotorStatus.MOVING) return;  //MOVING 인스턴스는 1개만 존재함. 주소값(레퍼런스)으로 참조 가능.
-
-        DoorStatus doorStatus = door.getDoorStatus();
-        //2차로, 현재 문이 열려있으면 모터 구동이 불가능하니, 문을 닫고나서 모터를 움직일 수 있도록.
-        if (doorStatus == DoorStatus.OPENED) door.close();
-
-        //이제, 1.모터는 멈춰있는 상태 + 2.문은 닫혀있는 안전한 상태 임을 모두 확인했으니 모터를 주어진 Direction으로 구동가능.
-        moveHyundaiMotor(); //모터를 구동시키자.
-        setMotorStatus(MotorStatus.MOVING);//모터를 구동시켰으니. 모터의 상태를 작동중으로 변경.
-    }
-
-        //실제로 현대모터를 구동시키는 메서드(로직).
-        private void moveHyundaiMotor(){
-            System.out.println("Hyundai Motor Initiated");
-        }
-    }
-```
-```java
-public class Door {
-    private DoorStatus doorStatus;
-
-    public Door() {
-        doorStatus = DoorStatus.CLOSED; //doorStatus 필드에는 DoorStatus 클래스에 정의되어 있는 static final 타입의 OPENED 레퍼런스 변수의 값이 할당됨.
-        //OPENED 레퍼런스 변수의 값은 => 힙 영역에 할당되어있는 DoorStatus 타입의 객체인 OPENED의 주소(레퍼런스).
-    }
-
-    public void open() {
-        doorStatus = DoorStatus.OPENED;
-    }
-
-    public void close() {
-        doorStatus = DoorStatus.CLOSED;
-    }
-
-    public DoorStatus getDoorStatus() {
-        return doorStatus;
+public class Home {
+    public Apple getApppleAppleForBreakFast(String kind){
+        Apple apple = new Hongok();
+        apple.wash();
+        return apple; //집에서 아침에는, 사과를 씻기만하고 바로 먹는다.
     }
 }
 ```
-```java
-public class Main {
-    public static void main(String[] args){
-        Door door = new Door();
-        HyundaiMotor hyundaiMotor = new HyundaiMotor(door);
-        hyundaiMotor.move(Direction.UP);
-    }
-}
-```
+
+<br>
 
 **기존 코드 설계는 위와 같다.**    
-**하지만 위와 같은 설계는 문제점이 있다** 
+### 허나, 이러한 구조는 문제점이있다.   
 
 <br><br><hr><br>
 
@@ -163,279 +122,296 @@ public class Main {
 
 <br>
 
-+ **현재 설계는 HyundaiMotor 클래스가 현대모터를 구동시키고있다.**
-+ **그런데, 만약 현대가 아닌 다른 회사의 모터를 제어해야하는 경우에는 어떻게 해야 하는가?**
-  > **예를 들어 LG모터를 구동시키고 싶다면?**
++ 현재 설계는 Home 이나 Restaurant 모두 **new 연산자를 사용하여 Apple 객체를 생성하고있다.**
+  > new라는 연산자는 `new 구체적인클래스이름();` 구조이다.  
+  > 즉, 우리가 생성하고자하는 구체적인 클래스이름을 new 연산자 뒤에 지정을해줘야 객체생성이 된다.  
+
+<br>
+
+이것이 문제가된다.   
+
+<br>
+
++ **예를들어 식당에서 부사사과가 아니라 홍옥사과를 서빙하고싶은 경우 어떻게해야할까?**
   
-`=> 이 경우, HyundaiMotor 클래스와 기능이 동일한 LGMotor 클래스를 만들어내면 될 것이다.`  
+=> **new `Busa`();** 를 **new `Hongok`();** 처럼 구체적인 클래스이름을 변경해줘야만할 것이다.  
+> 마찬가지로 집에서 아침에 홍옥사과가 아닌 부사사과를 먹고싶다면... Hongok->Busa
 
-**하지만 생성자 이름이나 일부 메서드의 이름만 다르고 나머지 부분들은 아예 동일하기때문에,    
-아래와 같이 중복되는 맴버들을 슈퍼클래스로 모델링하여 일반화 관계(상속관계)로 설계하면 수월할 것이다.** 
+<br><br>
 
+**즉, 우리가 생성하고자하는 인스턴스를 변경하려고하면 반드시 new 뒤에오는 클래스이름을 바꿔줘야만한다.** 
 
-<div align="center"><img src="https://github.com/user-attachments/assets/2e790691-32ba-48fe-bcbe-91417e9efdd7"></div>
+<br>
+
+왜?  -> **우리가 필요로하는 인스턴스를 new 연산자로 직접만들어서 사용하고있기 때문이다.**  
+
+<br>
+
+그리고, 만약 **경우에 따라 부사 or 홍옥사과를 선택을 하고싶다면?**   
+
+아래와 같이 서빙 메서드의 매개변수로 받은 문자열에 따라 사과를 선택하도록하면 될 것이다.  
 
 ```java
-public abstract class Motor {
-    protected Door door;
-    private MotorStatus motorStatus;
-
-    public Motor(Door door){
-        this.door= door;
+public class Restaurant {
+    public Apple servingApple(String kind) { //사과 서빙 메서드.
+        Apple apple = null;
+        if (kind.equals("busa")) apple = new Busa();
+        if(kind.equals("hongok")) apple = new Hongok();
+        apple.wash(); //사과를 씻고
+        apple.peel(); //사과껍질을 깎고
+        apple.slice(); //사과를 자르고
+        return apple; //사과를 손님에게 제공한다.
     }
-
-    protected MotorStatus getMotorStatus() {return motorStatus;}
-    protected void setMotorStatus(MotorStatus motorStatus) {this.motorStatus = motorStatus;}
-
-    public abstract void move(Direction direction);
 }
-
+public class Home {
+    public Apple getApppleAppleForBreakFast(String kind){
+        Apple apple = null;
+        if (kind.equals("busa")) apple = new Busa();
+        if(kind.equals("hongok")) apple = new Hongok();
+        apple.wash();
+        return apple; //집에서 아침에는, 사과를 씻기만하고 바로 먹는다.
+    }
+}
 ```
+<br>  
+
+
+
+#### 그러나 이 역시도 문제가 있다.  
+
+<br>
+
+만약 **사과의 종류가 추가되는 경우, 사과가 필요한 모든 곳에서 이 새로운 종류의 사과에 대한 처리를 해줘야하기에 `기존 코드를 변경`해줘야한다.**
+
+<br>
+
+예를들어, 식당에서 새로운 사과종인 홍로사과를 새로운 디저트로 선보이고자 한다면, if 문을 추가해줘야한다.  
+
+
+
 ```java
-public class LGMotor extends Motor{
-
-    public LGMotor(Door door) {
-        super(door);
-    }
-
-    public void move(Direction direction) {
-        MotorStatus morMotorStatus = getMotorStatus();
-        if (morMotorStatus == MotorStatus.MOVING) return;
-
-        DoorStatus doorStatus = door.getDoorStatus();
-        if (doorStatus == DoorStatus.OPENED) door.close();
-        
-        moveLGMotor(); //모터 구동
-        setMotorStatus(MotorStatus.MOVING);
-    }
-        //실제로 현대모터를 구동시키는 메서드(로직).
-        private void moveLGMotor(){
-            System.out.println("LG Motor Initiated");
-        }
-    }
+		    if (kind.equals("busa")) apple = new Busa();
+        if(kind.equals("hongok")) apple = new Hongok();
+        if(kind.equals("hongro")) apple = new Hongro();
 ```
-```java
-public class HyundaiMotor extends Motor{
 
-    public HyundaiMotor(Door door) {
-        super(door);
-    }
 
-    public void move(Direction direction) {
-        MotorStatus morMotorStatus = getMotorStatus();
-        if (morMotorStatus == MotorStatus.MOVING) return;
 
-        DoorStatus doorStatus = door.getDoorStatus();
-        if (doorStatus == DoorStatus.OPENED) door.close();
+새로운 종류의 사과의 추가로인해서 식당 말고도 집이라던지 등등,  
+**new 연산자로 사과 인스턴스를 생성하는 부분들은 모두 영향을 받게될 것이다.  
+즉 새로운 종류의 사과에 대한 처리를 위해 코드 변경이 뒤 따라온다.**  
 
-        moveHyundaiMotor(); //모터를 구동시키자.
-        setMotorStatus(MotorStatus.MOVING);
-    }
 
-        //실제로 현대모터를 구동시키는 메서드(로직).
-        private void moveHyundaiMotor(){
-            System.out.println("Hyundai Motor Initiated");
-        }
-    }
-```
-<br>
 
-위와 같이 추상클래스에, 각 회사의 모터 클래스마다 공통적인 부분들(set,getMotorStatus & Door+MotorStatus필드)은 모두 정의해놓았고  
-
-각 회사의 모터마다 구현이 다른 메서드는(예를들어, 각 회사마다 모터의 움직임이 다르니 move()의 로직은 각기 다르다) 정의는 없고 선언만해놓은 형태인 **추상메서드**로 선언해두었다.  
-
-<br>
-
-이로써 다른회사의 모터도 문제없이 작동할 수 있게된 것 같으나, 문제점이 있다.  
-
-<br>
-
-**HyundaiMotor와 LGMotor 클래스의 move() 메서드**를 보면, **`메서드의 작업 흐름이 거의 동일하나,`**  
-### 각 회사마다 모터이름이 다르기에, **실제 모터를 구동시키는 기능을하는 `move"회사"Motor()`메서드** 호출부분에서  저 "회사" 안에 들어갈 이름이 각 회사마다 다를 것이다.  
-
-<br>
-
-#### 즉, 전체적인 move() 알고리즘의 step은 동일하나, ```일부step(ex: move"회사"Motor() 메서드)```만 다른경우가 존재한다는 것이다.  
-
-<br>
-
-#### "일부분만 빼고 나머지는 동일하다" -> 저 일부분 때문에 move()자체를 재사용 할 수가 없게되었네...  
-#### 전체적인 흐름은 그대로두고, 그 일부분만 어떻게 처리하면 더 좋은 코드가 될텐데... 
-
-<br>
-
-### 이렇듯 `메서드의 동일한 흐름속에서`, `일부 step 들이 다른 경우에`, 전체적인 흐름은 동일하게 유지하되, 이 각 클래스의 특정 메서드는 각각 다르게 작동하도록 처리해주는것이 바로 Template Method 패턴의 중점이자 역할이다.  
+ #### 그렇다면 이 문제들을 어떻게 해결해야 할까? 
 
 <br><hr><br>
-   
-## + HyundaiMotor와 LGMotor클래스의 move 메서드 문제점 개선 by `Template Method 패턴`
 
-<br>
-
-<div align="center"><img src="https://github.com/user-attachments/assets/61ff8e81-8168-4e01-b464-ee23abd2aa6f"></div>
-
-> 출처: Java객체지향 디자인패턴(한빛미디어)  
-> **`빨간색 배경의 코드는 각 모터마다 동일한 부분이다.`**
-
-<br><br>
-
-위의 그림에서 `왼쪽이 HyundaiMotor클래스의 move() 메서드`이고, `오른쪽이 LGMotor클래스의 move() 메서드`이다.  
-보다싶이, **전체적인 흐름이, 거의 모든 부분이 동일하다.**  
-
-<br><br>
-
-실행흐름을 보면  
-
-+ 우선, getMotorStatus()로 모터의 상태를 체크한다.
-+ 그다음, 모터가 구동중(MOVING)이라면 구동시키지않고 move()를 관둔다.
-+ `구동중이 아니라면` + getDoorStatus()로 문의 상태를 체크한다.
-+ 문이 열려있는 상태라면 문을 닫는다.
-
-<br><br>
-
-**위 흐름까지는 모든회사의 모터에서의 동일한 흐름이다.**   
-
-<br>
-
-### 그러나, 실제로 모터를 구동시키는 moveMotor() 로직은 회사마다 다르다.  
-> 회사마다 모터가 다 다르니깐... 구동시키는 로직은 그 각 회사마다의 서로다른 모터를 구동시키도록 작성되어있음
-
-<br>
-
-이 후, 마지막에 setMotorStatus()로 모터의 상태를 움직이고있는 상태로 변경해주는 로직은 모터마다 동일하다.  
-
-<br><br>
-
-즉, 모든 회사의 모터 클래스 내의 move() 메서드 안에서 **저 moveMotor() 로직 딱 하나만 다르기때문에**  
-#### 이 move() 메서드 전체를 공유하지 못하고, 각 회사의 모터클래스에 맞게 서로 다르게 정의할 수 밖에없게되었다.  
-
-<br><br>
-
-### 이렇듯, 여러 메서드들이 서로 거의 모든 부분은 동일하나 일부 step들만 다른경우에 어떻게하면 동일한 부분들을 공유할 수 있겠는가?  
-
-<br><br>
-
-이 해결책은 간단하다.  
-
-<br>
+### <문제점 개선>
 
 
-> #### 이 "거의 모든 부분은 동일하나 일부 step들만 다른 메서드"에서, `동일한 부분들은, 상위 클래스에다가 메서드로 정의(이름&내용 동일)`하여 공유되도록 변경하고  
-> ####  + 그 `서로다른 일부 step은 상위 클래스에서 추상메서드로 정의하여 자식들이 적합하게 오버라이딩`하는 방식으로 변경해보자.  
+ 지금껏 여러 디자인 패턴들을 알아보면서 일관되게 봐왔던 것이 있다.   
 
-<br><br>
+바로 -> **`변경이 되기 쉬운 부분, 변경이 자주 일어나는 부분은 따로 클래스로 모델링하여(캡슐화) 분리시켰다. `**  
 
-## Template Method 패턴을 적용시킨 코드
+
+
+**지금 이 사과 예제에서 주로 `변경되는 부분은 무엇인가?`**
 
 <br>
 
 ```java
-public abstract class Motor {
-    protected Door door;
-    private MotorStatus motorStatus;
+	Apple apple = null;
+	if (kind.equals("busa")) apple = new Busa();
+    if(kind.equals("hongok")) apple = new Hongok();
+    if(kind.equals("hongro")) apple = new Hongro();
+```
 
-    public Motor(Door door){
-        this.door= door;
+
+
+**사과 객체를 생성하는 부분, 바로 이 부분이다.** 이 부분은, 사과종류가 추가될때마다 그에따라 if문을 매번 추가해줘야한다. 
+
+<br>
+
+이 부분을 **AppleFactory라는 클래스로 모델링하여 분리** 시켜보자. 
+
+
+
+```java
+public class AppleFactory {
+    public static Apple getApple(String kind){
+        Apple apple = null;
+        if (kind.equals("busa")) apple = new Busa();
+        if(kind.equals("hongok")) apple = new Hongok();
+        if(kind.equals("hongro")) apple = new Hongro();
+        return apple;
     }
-
-    protected MotorStatus getMotorStatus() {return motorStatus;}
-    protected void setMotorStatus(MotorStatus motorStatus) {this.motorStatus = motorStatus;}
-
-    public void move(Direction direction) { //각 모터클래스마다 공유하는 공통 메서드=> Template Method.
-        MotorStatus morMotorStatus = getMotorStatus();
-        if (morMotorStatus == MotorStatus.MOVING) return;
-
-        DoorStatus doorStatus = door.getDoorStatus();    // 쭉 공통된 부분 실행.
-        if (doorStatus == DoorStatus.OPENED) door.close();
-
-        moveMotor(direction); // 위에서 쭉 공통된 부분 실행하다가, 여기서 각 하위클래스에서 재정의한 구문 실행(primitive Method).
-        setMotorStatus(MotorStatus.MOVING); // 다시 공통된 부분 실행.
-    }
-    //각 자식 모터클래스마다 서로다른 이 특정 step은, 자식마다 알아서 적합하게 오버라이딩하도록 추상메서드로 선언.
-    protected abstract void moveMotor(Direction direction);
 }
 
 ```
+> 여기서 getApple() 메서드를 인스턴스 메서드가 아닌 **static** 메서드로 두어서, 굳이 AppleFactory객체 생성없이 사용하자.   
+
+<br>
+
+이렇게 **공통 부분들을 AppleFactory클래스의 getApple() 메서드에 정의**해두고, 사과 객체가 필요한 곳에서는 이 getApple() 메서드를 사용하면 된다.  
+
+
+
 ```java
-public class HyundaiMotor extends Motor{
+public class Restaurant {
+    public Apple servingApple(String kind) { //사과 서빙 메서드.
+        Apple apple = AppleFactory.getApple(kind);
 
-    public HyundaiMotor(Door door) {
-        super(door);
+        apple.wash(); //사과를 씻고
+        apple.peel(); //사과껍질을 깎고
+        apple.slice(); //사과를 자르고
+        return apple; //사과를 손님에게 제공한다.
     }
-
-        //실제로 현대모터를 구동시키는 메서드 => 오버라이딩
-        @Override
-        protected void moveMotor(Direction direction){
-            System.out.println("Hyundai Motor Initiated");
-        }
+}
+public class Home {
+    public Apple getApppleAppleForBreakFast(String kind){
+        Apple apple = AppleFactory.getApple(kind);
+        apple.wash();
+        return apple; //집에서 아침에는, 사과를 씻기만하고 바로 먹는다.
     }
+}
 ```
+
+<br>
+
+이렇듯, 객체를 생성하는 로직을 따로 분리해서 클래스로 캡슐화하였고,    
+
+**이를 통해 Home 이나 Restaurant 에서는 new 연산자를 통해 직접 사과 객체를 생성하지 않게 되었다.**  
+
+<br><hr>
+
+#### 객체를 생성하는 역할은 AppleFactory클래스의 getApple() 메서드에서 대신 하고있다.  
+
+
+
+### 이때, getApple() 메서드처럼, 객체를 생성하는 역할을하는 메서드를 `Factory Method`라고 한다.
+
+> factory = 공장. 즉, 마치 공장처럼 인스턴스를 생성해주는 그러한 메서드다.
+
+<hr><br>
+
+즉 new 연산자를 사용하지않고 - Factory Method를 통해서 객체를 생성하기때문에,  
+원하는 사과종류로 변경을 시켜도 기존처럼 코드 변경(if문 추가) 할 일이 없어졌다.  
+
+<br>
+
+물론 AppleFactory클래스의 getApple() 메서드 내에 if문을 추가시켜야하겠지만,  
+기존에는 사과객체 생성하는 모든 부분에 if문을 추가시켜줬다면, 이건 getApple() 메서드 내에서 한번만 수정해주면 끝이다.   
+
+> 재사용성, 참 편리하다.  
+
+<br><br>
+
+물론 위처럼 getApple() 메서드를 **static 메서드**로 둬도 괜찮지만, 또다른 방법은 **`싱글톤 패턴`** 을 이용하는 방법도 있다.  
+
+<br><hr><br>
+
+## <div align="center"> <싱글톤 패턴 적용> </div>
+
+<br>
+
+#### 현재코드에서는 사과를 필요로하는 곳은 Home, Restaurant... 이다. 
+
+이때, Home, Restaurant... 들이 각자 개별적인 인스턴스를 가지고서 작업하는 것이 아니고,  
+**싱글톤 패턴을 적용해서 AppleFactory클래스의 객체를 딱 하나만 생성해두고  
+사과를 필요로 하는 모든곳에서 이 `싱글톤 유일 객체` 하나를 공유하여 작업할 수 있도록 해보자.**   
+
+<br>
+
 ```java
-public class LGMotor extends Motor{
+public class AppleFactory {
+    private static AppleFactory instance = null; // 싱글톤 패턴을 이용한 유일 객체.
+    //private 접근제한 생성자 -> 외부에서 이 AppleFactory 클래스 객체 생성불가.
+    //즉, 이 클래스에서 객체 하나 생성해두고 외부에서는 이거를 참조해서 사용하도록.
+    // => 싱글톤. (private 생성자)
+    private AppleFactory(){}
 
-    public LGMotor(Door door) {
-        super(door);
+    public static AppleFactory getInstance() {
+        if(instance == null)
+            instance = new AppleFactory();
+
+        return instance;
     }
 
-        //실제로 LG모터를 구동시키는 메서드 => 오버라이딩
-        @Override
-        protected void moveMotor(Direction direction){
-            System.out.println("LG Motor Initiated");
-        }
+    public Apple getApple(String kind){
+        Apple apple = null;
+        if (kind.equals("busa")) apple = new Busa();
+        if(kind.equals("hongok")) apple = new Hongok();
+        if(kind.equals("hongro")) apple = new Hongro();
+        return apple;
     }
+}
+
+```
+
+```java
+public class Restaurant {
+    public Apple servingApple(String kind) { //사과 서빙 메서드.
+        // 싱글톤 패턴을 이용.
+        // static 메서드인 getInstance()로 -> AppleFactory클래스에 있는 유일 객체에 접근.참조.
+        AppleFactory factory = AppleFactory.getInstance();
+        // FactoryMethod인 getApple()로, 선택한 kind종류의 사과객체를 생성.
+        Apple apple = factory.getApple(kind);
+        //즉, 객체의 생성을 직접하지 않아도, 팩토리 메서드인 getApple 메서드에서 객체생성을 대신해줌.
+
+        apple.wash(); //사과를 씻고
+        apple.peel(); //사과껍질을 깎고
+        apple.slice(); //사과를 자르고
+        return apple; //사과를 손님에게 제공한다.
+    }
+}
+
+public class Home {
+    public Apple getApppleAppleForBreakFast(String kind){
+        //Restaurant 에서 참조하는 AppleFactory인스턴스와 동일한 인스턴스를 참조중.
+        //싱글턴 패턴 적용해서, AppleFactory 객체를 각각 생성할 필요x. 하나만 만들어두고 공유사용.
+        AppleFactory factory = AppleFactory.getInstance();
+        Apple apple = factory.getApple(kind);
+        apple.wash();
+        return apple; //집에서 아침에는, 사과를 씻기만하고 바로 먹는다.
+    }
+}
+```
+
 ```java
 public class Main {
-    public static void main(String[] args){
-        Door door = new Door();
-        
-        Motor lgMotor = new LGMotor(door);
-        lgMotor.move(Direction.UP);
-
-        Motor hyundaiMotor = new HyundaiMotor(door);
-        hyundaiMotor.move(Direction.UP);
+    public static void main(String[] args) {
+        Restaurant r1 = new Restaurant();
+        r1.servingApple("busa"); //식당 디저트 사과종류를 부사사과로 설정.
     }
 }
+
 ```
+
+<br><br><br><hr><br>
+
+## <div align="center"><예제 정리></div>
 
 <br>
 
-#### move() 메서드 내에서 모터 클래스마다 동일한 부분들은 상위 추상클래스인 Motor클래스에서 move() 이름그대로 일반 메서드로 정의시켰고, `(이로써 하위 클래스<각 회사의 모터 클래스들>이 공통된 전체적인 흐름인 move() 메서드를 그대로 재사용 할 수 있게됨)`  
+### 결론: 
 
-#### 각 모터 클래스마다 정의했던 move"회사"Motor() 메서드를 => 모든 회사의 모터클래스에서 적합하게 오버라이딩하여 사용할 수 있도록 상위 추상클래스인 Motor클래스에서 "회사"이름을 뺀 `moveMotor()추상메서드`로 변경하였다. 
+#### 변경되는 부분을 클래스로 캡슐화하고,
 
-<br><br>
-
-### 여기서, 상위 클래스에 정의된 move() 메서드를 template Method 라고한다.
-> **`template Method:` 여러 클래스에서 공통으로 사용하는 메서드를 상위 클래스에 정의하여 템플릿화. 즉, 이 공통된 기능인 템플릿을 갖다가 써라.** 
-
-<br><br>
-
-#### + 새롭게 삼성사의 모터를 추가로 구현하고 싶다면
-
-> **1. Motor추상클래스를 상속받고, 공통으로 사용되는 핵심 메서드인 move() 및 공통 맴버들을 재사용하도록한다.**
-> 
-> **2. 각 모터클래스마다 상이한 부분, 즉 실제모터구동 추상메서드를 삼성사의 모터의 구동로직에맞게 오버라이딩한다.**
- 
-
-```java
-public class SamsungMotor extends Motor{
-
-    public SamsungMotor(Door door){
-        super(door);
-    }
-
-    @Override
-    protected void moveMotor(Direction direction) { //삼성모터의 구동로직에 맞게 재정의.
-        System.out.println("Samsung Motor Initiated");
-    }
-}
-```
-
-<br><br>
-
-## 예제 정리
+#### `객체를 생성하는 로직`을, `캡슐화한 클래스의 메서드로 정의`하자.  
 
 <br>
+
+ 이때, 바로 그 - **객체를 생성하는 메서드를** **`FactoryMethod`** 라고 부른다.  
+
+<br>
+
+so, 객체를 생성하는 로직(FactoryMethod)이 다른 클래스에 있기때문에,  
+우리가 원하는 인스턴스가 변한다 할지라도 - 직접적으로 영향을 받지 않게된다.  
+> ex) 사과종류가 추가될 때마다, 이 처리를 위해 사과객체를 필요로하는 곳마다 if()문을 추가해줘야했음.  
+
+<br><br>
+
 
 <div align="center">
 <img src="https://github.com/user-attachments/assets/d86a8461-d2df-4f2b-bf83-38f32ea51d32">
