@@ -179,7 +179,7 @@ public class Main {
 
 ## 설계 개선
 
-도로 표시 기능에 차선 표시 기능을하는 RaodDisplayWithLane 클래스와 도로 표시 기능의 RoadDisplay 클래스가 있다면, RaodDisplayWithLane클래스는 RoadDisplay클래스의 도로 표시 기능 draw() 메서드를 재사용하고 싶을 것이다.  
+도로 표시 기능에 차선 표시 기능을하는 RoadDisplayWithLane 클래스와 도로 표시 기능의 RoadDisplay 클래스가 있다면, RoadDisplayWithLane클래스는 RoadDisplay클래스의 도로 표시 기능 draw() 메서드를 재사용하고 싶을 것이다.  
 
 이때 **상속관계가 아닌 연관관계로** RoadDisplay클래스의 도로 표시 기능 draw() 메서드를 재사용해보자는 것이다.   
 
