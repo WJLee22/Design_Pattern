@@ -165,7 +165,7 @@ public class Main {
 
 <br><br><hr><br>
 
-## Decorator 패턴의 일반적인 구조
+## Adapter 패턴의 일반적인 구조
 
 <br>
 
