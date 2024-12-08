@@ -22,7 +22,7 @@
   > 객체를 어떻게 조합할 것인가를 정의해놓은 패턴. 어떤 새로운 기능을 제공하기위해서, 객체를 조합하는 방법들을 패턴화 시킨 것.
   
   + <a href="Structural Pattern/Decorator Pattern.md">Decorator</a>
-  + <a href="Structural Pattern/Adapter Pattern.md">Decorator</a>
+  + <a href="Structural Pattern/Adapter Pattern.md">Adapter</a>
   
 <br>
 
