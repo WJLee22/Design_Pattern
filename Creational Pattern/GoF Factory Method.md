@@ -261,8 +261,21 @@ public class Main {
 <br>
 
 #### Factory Method 패턴은 Template Method 패턴의 변형으로 볼 수 있다.  
-#### Factory Method 패턴은 `객체 생성에 중점`을 두고, Template Method 패턴은 `알고리즘의 구조를 정의하는 데 중점`을 둔다.
+#### Factory Method 패턴은 `객체 생성에 중점`을 두고, Template Method 패턴은 `알고리즘의 구조를 정의하는 데 중점`을 둔다.  
 
+<br><br>
+
+ ### <div align="center"> [ Template Method 패턴과 Factory Method 패턴과의 관계 ]  </div>
+
+ <br>
+
+`템플릿 메서드 패턴`은 `행동 패턴`이고 `팩토리 메서드 패턴`은 `생성 패턴`이라 둘은 전혀 다른 패턴.  
+
+다만 클래스 구조의 결은 둘이 같다고 보면 되는데, 인스턴스를 생성하는 공장을 Template Method 패턴을 이용하여 구성한 것이 Factory Method 패턴이기 때문이다.  
+
+Template Method 패턴에서는 하위 클래스에서 구체적인 처리 알고리즘의 내용을 만들도록 추상 메소드를 상속 시켰었다.  
+
+#### 이 로직을 알고리즘 내용이 아닌 `인스턴스 생성에 적용한 것이 Factory Method 패턴` 인 것이다.  
 
 <br><br><hr><br><br>
 
