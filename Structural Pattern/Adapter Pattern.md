@@ -165,52 +165,14 @@ public class Main {
 
 <br><br><hr><br>
 
-
-## 마무리
-
-<br>
-
->
-+ **데코레이터 패턴은 기본 기능에 추가할 수 있는 기능의 종류가 많은 경우 유용한 Structural설계패턴 이다**  
->
-+ **데코레이터 패턴은 기본 기능에 추가될 수 있는 많은 수의 부가기능에 대해서 `기존의 코드를 변경하지 않으면서도(OCP 만족)` `다양한 조합을 동적으로 구현`할 수 있는 패턴이다**
->
-
-<br><hr><br>
-
-## Decorator 패턴의 일반적인 설계구조
+## Decorator 패턴의 일반적인 구조
 
 <br>
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/ad420e48-9f1d-49d8-b983-0d67c1fb1ded">
+<img src="https://github.com/user-attachments/assets/2c4fd056-a7a7-4488-98f7-e22357d88afe">
 </div>
-
-> 출처: Java객체지향 디자인패턴(한빛미디어)   
-> 위 그림에서는 Decorator와 Component 간에 합성관계로 모델링되었지만, 예제에서처럼 연관관계로 모델링해도 된다.  
-
-<br><br>
-
-> + **`Component (추상클래스)`: 기본 기능을 뜻하는 ConcreteComponent와 추가 기능을 뜻하는 Decorator를 포함하는 추상클래스(기본기능 객체와 장식자 객체 모두를 묶는 역할)**
-
-<br>
-
-> + **`ConcreteComponent 클래스`: 기본 기능을 구현하는 클래스(데코레이팅 할, 꾸며줄 대상인 기본 객체)**
-
-<br>
-
-> + **`Decorator (추상클래스)`: 부가 기능들을 일반화시킨 추상클래스**
-
-<br>
-
-> + **`ConcreteDecorator 클래스`: 기본 기능을 꾸며줄, 기본 기능에 추가되는 부가기능 클래스**
-
-<br>
-<br>
-
-+ **여기서, Decorator가 Component와 연관관계를 맺도록 설계된 이유는
-부가기능인 ConcreteDecorator들이 자기들 뿐만아니라 기본기능 ConcreteComponent도 참조할 수 있도록 하기 위함이다**
-
+  
 <br>
 <br>
 <br><br>
