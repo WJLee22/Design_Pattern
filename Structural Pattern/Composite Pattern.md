@@ -186,7 +186,10 @@ public class Box extends ParcelItem {
 <img src="https://github.com/user-attachments/assets/26ce75be-7503-4b7e-ac0a-0362f7d8c03b">
 </div>
 
- > 출처: Java객체지향 디자인패턴(한빛미디어)   
+ > 출처: Java객체지향 디자인패턴(한빛미디어)  
+ > 여기서, Composite -> Component간의 관계가 합성관계로 되어있지만, 집약관계도 상관없다.
+ > 예제에서의 operation은 price 메서드
+ > 예제에서의 addComponent는 addItems  
   
 <br><br>
 
